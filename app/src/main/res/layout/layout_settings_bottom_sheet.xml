@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:id="@+id/bottom_sheet_menu"
+    android:background="?attr/colorSurface">
+
+    <View
+        android:id="@+id/triggerLine"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:background="?attr/colorOutlineVariant"
+        android:alpha="0.2"
+        android:layout_marginBottom="24dp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorPrimary"
+        android:text="Settings"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_marginBottom="20dp"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/toggleTheme_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Toggle Theme"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:thumbTint="?attr/colorPrimary"
+            app:trackTint="?attr/colorOutlineVariant"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/notifications_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="?attr/colorOnSurface"
+            android:text="Notifications"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_notifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:thumbTint="?attr/colorPrimary"
+            app:trackTint="?attr/colorOutlineVariant"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/logout_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="?attr/colorOnSurface"
+            android:text="Logout"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/about_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="?attr/colorOnSurface"
+            android:text="About"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/extra_settings_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="?attr/colorOnSurface"
+            android:text="Extra Settings"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

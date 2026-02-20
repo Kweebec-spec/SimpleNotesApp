@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lavender">#DA70D6</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="translucent_background">#80000000</color> <!-- 50% black -->
+    <color name="darker_white">#80EDE2E2</color>
+
+
+    <!-- Default color -->
+    <color name="default_button_color">#CCCCCC</color>
+    <!-- Color when the button is pressed (clicked) -->
+    <color name="pressed_button_color">#AAAAAA</color>
+    <!-- Color when the button is focused -->
+    <color name="focused_button_color">#999999</color>
+
+    <!-- Default color -->
+    <color name="default_button_txt_color">#615F5F</color>
+    <!-- Color when the button is pressed (clicked) -->
+    <color name="pressed_button_txt_color">#908787</color>
+    <!-- Color when the button is focused -->
+    <color name="focused_button_txt_color">#D0D0D0</color>
+
+</resources>

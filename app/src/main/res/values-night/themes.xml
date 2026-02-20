@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.SimpleNotesApp" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+
+
+    </style>
+</resources>

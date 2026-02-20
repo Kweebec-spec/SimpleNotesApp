@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.SimpleNotesApp" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+
+        <item name="android:colorBackground">?attr/colorSurfaceContainer</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Material3.BottomSheet.Modal">
+
+        <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
+        <item name="shapeAppearance">@style/CustomShapeAppearanceBottomSheet</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheet" parent="">
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+    </style>
+
+    <style name="Theme.SimpleNotesApp" parent="Base.Theme.SimpleNotesApp" />
+
+
+</resources>

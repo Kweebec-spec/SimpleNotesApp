@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:padding="20dp">
+
+            <ImageView
+                android:id="@+id/logo_book"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                app:srcCompat="@drawable/logo_book"
+                android:layout_gravity="center"
+
+                />
+
+                <TextView
+                android:textColor="?attr/colorOnSurface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign-up"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="40dp"
+                android:layout_gravity="center"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etUsername"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:padding="8dp"
+        android:hint="Username"
+        android:inputType="text"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/outline_man_4_24"
+        android:drawablePadding="8dp"
+        android:background="@drawable/edittext_bkg"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etPassword"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:padding="8dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/outline_lock_24"
+        android:drawablePadding="8dp"
+        android:background="@drawable/edittext_bkg"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="30dp"
+                android:padding="8dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/baseline_alternate_email_24"
+                android:drawablePadding="8dp"
+                android:background="@drawable/edittext_bkg"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSignUp"
+        app:cornerRadius="30dp"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="Sign up"
+        android:textSize="55px"
+        android:layout_marginTop="35dp"
+        app:backgroundTint="?attr/colorPrimary"
+        android:layout_gravity="center"
+        android:textColor="?attr/colorOnPrimary"
+        />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

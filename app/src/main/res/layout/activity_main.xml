@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:background="?attr/colorSurface">
+
+    <!-- Основной контент приложения -->
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="?attr/colorSurface"
+        android:weightSum="100">
+
+        <ImageView
+            android:id="@+id/bottom_sheet_menu"
+            android:src="@drawable/sharp_add_circle_50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginBottom="28dp"
+
+            android:layout_weight="5"/>
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp"
+            tools:listitem="@layout/item_note"
+            android:gravity="center"
+            android:layout_weight="95" />
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+</LinearLayout>

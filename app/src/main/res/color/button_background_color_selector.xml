@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Color when the button is pressed (clicked) -->
+    <item android:color="?attr/colorSurfaceContainer" android:state_pressed="true" />
+    <!-- Color when the button is focused -->
+    <item android:color="?attr/colorSurface" android:state_focused="true" />
+    <!-- Default color -->
+    <item android:color="?attr/colorPrimary" />
+</selector>
