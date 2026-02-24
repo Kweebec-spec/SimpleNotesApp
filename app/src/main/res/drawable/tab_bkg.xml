@@ -4,5 +4,6 @@
 
     <solid android:color="?attr/colorSurfaceContainer"/>
     <corners android:radius="40dp"/>
+    <stroke android:color="?attr/colorOutlineVariant"/>
 
 </shape>

@@ -10,6 +10,7 @@
     <com.google.android.material.card.MaterialCardView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
     app:cardCornerRadius="30dp"
     app:cardElevation="4dp"
     app:strokeWidth="1dp"
@@ -22,26 +23,28 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            app:tabIndicatorFullWidth="true"
-            app:tabGravity="fill"
-            app:tabMode="fixed"
-
-            app:tabIndicatorColor="?attr/colorPrimary"
-            app:tabIndicatorHeight="4dp"
-            app:tabSelectedTextColor="?attr/colorPrimary"
-            app:tabTextColor="?attr/colorOnSurfaceVariant"
-            app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Button" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="?attr/colorOutlineVariant"
+            app:tabIndicatorFullWidth="true"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorGravity="top"
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabIndicatorHeight="4dp"
+            app:tabSelectedTextColor="?attr/colorPrimary"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
+            app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Button" />
+
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

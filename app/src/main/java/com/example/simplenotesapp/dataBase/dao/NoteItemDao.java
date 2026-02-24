@@ -1,4 +1,4 @@
-package com.example.simplenotesapp.dataBases.notes;
+package com.example.simplenotesapp.dataBase.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,9 +7,10 @@ import androidx.room.Query;
 import androidx.room.Update;
 import androidx.room.Upsert;
 
+import com.example.simplenotesapp.dataBase.entity.NoteItemEntity;
+
 import java.util.List;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Flowable;
+
 
 @Dao
 public interface NoteItemDao {

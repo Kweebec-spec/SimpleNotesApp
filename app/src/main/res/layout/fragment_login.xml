@@ -1,36 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="20dp"
-            android:padding="20dp">
-
-            <ImageView
-                android:id="@+id/logo_book"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                app:srcCompat="@drawable/logo_book"
-                android:layout_gravity="center"
-
-                />
+    android:layout_marginTop="20dp"
+    android:padding="20dp">
 
             <TextView
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSurface"
                 android:text="Login"
                 android:textSize="28sp"
                 android:textStyle="bold"
@@ -48,7 +29,8 @@
                 android:layout_gravity="center"
                 android:drawableLeft="@drawable/outline_man_4_24"
                 android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"/>
+                android:background="@drawable/edittext_bkg"
+                android:textColor="?attr/colorPrimaryVariant"/>
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
@@ -62,7 +44,8 @@
                 android:layout_gravity="center"
                 android:drawableLeft="@drawable/outline_lock_24"
                 android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"/>
+                android:background="@drawable/edittext_bkg"
+                android:textColor="?attr/colorPrimaryVariant"/>
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -75,7 +58,8 @@
                 android:layout_gravity="center"
                 android:drawableLeft="@drawable/baseline_alternate_email_24"
                 android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"/>
+                android:background="@drawable/edittext_bkg"
+                android:textColor="?attr/colorPrimaryVariant"/>
 
             <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -91,9 +75,14 @@
                     android:id="@+id/checkbox_remember_me"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
                     android:text="Remember me"
                     android:tint="?attr/colorControlNormal"
-                    android:gravity="center_vertical" />
+                    android:textColor="?attr/colorPrimaryVariant"
+                    android:button="@drawable/checkbox_ripple_circle"
+
+                    android:textStyle="bold"
+                    />
 
                 <!-- Button placed BELOW the checkbox -->
                 <com.google.android.material.button.MaterialButton
@@ -107,10 +96,4 @@
                     android:textColor="@color/button_text_color_selector" />
 
             </LinearLayout>
-
-        </LinearLayout>
-    </LinearLayout>
-
-
-
 </LinearLayout>

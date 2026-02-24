@@ -3,5 +3,14 @@
     <style name="Base.Theme.SimpleNotesApp" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
 
 
+
+
     </style>
+
+        <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+            <item name="windowSplashScreenBackground">@color/black</item> <!-- Черный фон -->
+            <item name="postSplashScreenTheme">@style/Base.Theme.SimpleNotesApp</item>
+        </style>
+
+
 </resources>

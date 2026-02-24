@@ -23,4 +23,12 @@
     <style name="Theme.SimpleNotesApp" parent="Base.Theme.SimpleNotesApp" />
 
 
+
+        <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+            <item name="windowSplashScreenBackground">@color/white</item> <!-- Белый фон -->
+            <item name="postSplashScreenTheme">@style/Base.Theme.SimpleNotesApp</item>
+        </style>
+
+
+
 </resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight"> <!-- Цвет всплеска -->
+
+    <!-- Фоновый слой (ваш текущий селектор) -->
+    <item android:id="@android:id/mask">
+        <!-- Маска ограничивает ripple кругом (опционально) -->
+        <shape android:shape="oval">
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+
+    <item>
+        <selector>
+            <item android:state_checked="true" android:drawable="@drawable/checked_checkbox_circle" />
+            <item android:state_checked="false" android:drawable="@drawable/unchecked_checkbox_circle" />
+        </selector>
+    </item>
+</ripple>

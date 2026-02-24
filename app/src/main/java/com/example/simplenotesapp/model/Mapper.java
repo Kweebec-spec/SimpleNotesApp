@@ -1,8 +1,9 @@
 package com.example.simplenotesapp.model;
 
-import com.example.simplenotesapp.dataBases.notes.NoteEntity;
-import com.example.simplenotesapp.dataBases.notes.ThemeEntity;
-import com.example.simplenotesapp.dataBases.users.UserEntity;
+import com.example.simplenotesapp.dataBase.pojo.PreviewNoteWithItemsThemes;
+import com.example.simplenotesapp.dataBase.entity.NoteEntity;
+import com.example.simplenotesapp.dataBase.entity.ThemeEntity;
+import com.example.simplenotesapp.dataBase.entity.UserEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +15,9 @@ public class Mapper {
 
         return new User(
                 userEntity.username,
+                userEntity.password,
                 userEntity.email,
-                userEntity.password
+                userEntity.id
         );
     }
 
@@ -24,6 +26,9 @@ public class Mapper {
         e.username = userModel.getUsername();
         e.email = userModel.getEmail();
         e.password = userModel.getPassword();
+        e.id = userModel.getId(); // Устанавливаем реальный ID владельца
+        // НЕ устанавливайте e.id. Оставьте его 0, чтобы Room сгенерировал новый ID при Insert,
+        // ИЛИ используйте проверку, если вы обновляете существующего пользователя.
         return e;
     }
 
@@ -40,13 +45,27 @@ public class Mapper {
         );
     }
 
-    public static List<Note> listToModel(List<NoteEntity> noteEntityList) {
+    // В классе Mapper.java
+    public static List<Note> previewListToModel(List<PreviewNoteWithItemsThemes> relationList) {
         List<Note> notes = new ArrayList<>();
-        for(NoteEntity entity : noteEntityList){
-            notes.add(Mapper.toModel(entity));
+        if (relationList == null) return notes;
+
+        for (PreviewNoteWithItemsThemes relation : relationList) {
+            // Берем основную сущность заметки
+            NoteEntity entity = relation.note;
+
+            // Создаем модель.
+            // Если в модели Note нужны данные из Theme или Items, передайте их сюда.
+            Note noteModel = new Note(
+                    entity.id,
+                    entity.previewTitle,
+                    entity.previewText,
+                    entity.createdAt,
+                    entity.color
+            );
+            notes.add(noteModel);
         }
         return notes;
-
     }
 
     public static NoteEntity toEntity(Note noteModel) {

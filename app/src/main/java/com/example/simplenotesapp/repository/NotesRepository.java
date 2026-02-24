@@ -1,49 +1,49 @@
 package com.example.simplenotesapp.repository;
-
-
-import com.example.simplenotesapp.dataBases.notes.NoteDao;
-import com.example.simplenotesapp.dataBases.notes.NoteEntity;
-import com.example.simplenotesapp.dataBases.notes.NoteItemDao;
-import com.example.simplenotesapp.dataBases.notes.NoteItemEntity;
-import com.example.simplenotesapp.dataBases.notes.NotesDatabase;
-
+import com.example.simplenotesapp.dataBase.dao.NoteDao;
+import com.example.simplenotesapp.dataBase.entity.NoteEntity;
+import com.example.simplenotesapp.dataBase.dao.NoteItemDao;
+import com.example.simplenotesapp.dataBase.entity.NoteItemEntity;
+import com.example.simplenotesapp.dataBase.pojo.PreviewNoteWithItemsThemes;
 import java.util.List;
-
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Single;
-
-// Repository = переводчик + логика данных
-
-
-
 import androidx.lifecycle.LiveData;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+// Repository = переводчик + логика данных
 
 public class NotesRepository {
 
     private final NoteDao noteDao;
     private final NoteItemDao itemDao;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
-    public NotesRepository(NotesDatabase db) {
-        noteDao = db.noteDao();
-        itemDao = db.noteItemDao();
+    private static NotesRepository instance; // Исправили имя
+
+    // 1. Конструктор теперь принимает ВСЕ нужные DAO
+    private NotesRepository(NoteDao noteDao, NoteItemDao itemDao) {
+        this.noteDao = noteDao;
+        this.itemDao = itemDao;
     }
 
-    // LiveData Room сам обновляет
-    public LiveData<List<NoteEntity>> getAllNotes() {
-        return noteDao.getAll();
+    // 2. Метод получения экземпляра принимает оба DAO
+    public static synchronized NotesRepository getInstance(NoteDao noteDao, NoteItemDao itemDao) {
+        if (instance == null) {
+            instance = new NotesRepository(noteDao, itemDao);
+        }
+        return instance;
     }
 
-    public LiveData<List<NoteItemEntity>> getItems(long noteId) {
-        return itemDao.getItems(noteId);
+    // LiveData работает в фоновом потоке сама, executor тут не нужен
+    public LiveData<List<PreviewNoteWithItemsThemes>> getNotesForUser(long userId) {
+        return noteDao.getNotesForUser(userId);
+    }
+    public LiveData<List<PreviewNoteWithItemsThemes>> getNotesWithPreview(long userId) {
+
+        return noteDao.getNotesWithPreview(userId);
     }
 
-    // CRUD — вручную в фоне
-    public void insertNote(NoteEntity note) {
+    // Все изменения данных (Write) ОБЯЗАТЕЛЬНО через executor
+    public void upsertNote(NoteEntity note) {
         executor.execute(() -> noteDao.upsert(note));
     }
 
@@ -55,12 +55,8 @@ public class NotesRepository {
         executor.execute(() -> noteDao.delete(note));
     }
 
-    public void insertItem(NoteItemEntity item) {
+    public void upsertItem(NoteItemEntity item) {
         executor.execute(() -> itemDao.upsert(item));
-    }
-
-    public void updateItem(NoteItemEntity item) {
-        executor.execute(() -> itemDao.update(item));
     }
 
     public void deleteItem(NoteItemEntity item) {

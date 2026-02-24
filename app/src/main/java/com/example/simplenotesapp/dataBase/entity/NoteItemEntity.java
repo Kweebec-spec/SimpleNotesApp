@@ -1,4 +1,4 @@
-package com.example.simplenotesapp.dataBases.notes;
+package com.example.simplenotesapp.dataBase.entity;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;

@@ -7,57 +7,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="?attr/colorPrimary"
+    app:strokeColor="?attr/colorOnPrimary"
+    app:cardBackgroundColor="?attr/colorSurface"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="8dp"
-    app:cardCornerRadius="30dp"
+    app:cardCornerRadius="25dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
 
     app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true"
-    android:clickable="true"
-    android:focusable="true"
-
-    android:foreground="?attr/selectableItemBackground"
-    app:strokeColor="?attr/colorOutlineVariant">
+    app:cardUseCompatPadding="true">
     <!-- cardOverlap unable to file the cardview to the corners- clears spaces, cardUseCompat padding makes all the same padding for shades-->
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
 
         <LinearLayout
             android:paddingTop="10dp"
             android:paddingLeft="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:id="@+id/top_note_section"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:weightSum="100">
+
         <TextView
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="?attr/colorPrimary"
             android:id="@+id/noteTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Title.."
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textStyle="bold"
             android:layout_weight="55"
-            android:textStyle="bold"/>
+            android:textAlignment="textStart"/>
+
         <TextView
 
             android:id="@+id/noteDate"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
             android:text="12:45"
             android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_weight="45"
-            android:textStyle="italic"/>
+            android:textColor="?attr/colorSecondary"
+            android:textStyle="italic"
+            android:layout_weight="40"
+            android:textAlignment="textEnd"
+            />
+            <View
+                android:id="@+id/themeColorView"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/theme_circle"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="2dp"
+
+                />
+
+
 
         </LinearLayout>
         <View
@@ -65,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
 
-            android:background="?attr/colorOutline"
+            android:background="?attr/colorOnSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_note_section"
@@ -74,27 +90,16 @@
 
         <TextView
             android:maxLines="40"
-            android:padding="20dp"
-            android:textColor="?attr/colorOnBackground"
+            android:padding="10dp"
+            android:textColor="?attr/colorSecondary"
             android:id="@+id/noteText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Some txt..txt.."
+            android:layout_height="match_parent"
+            android:text="@string/TXT"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divide_line"/>
-
-
-        <ImageView
-            android:id="@+id/checkIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_checkbox_unchecked"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_margin="16dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
