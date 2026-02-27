@@ -17,14 +17,16 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Применяем динамические цвета и тему при запуске
-        DynamicColors.applyToActivitiesIfAvailable(this);
+
 
         SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
         boolean isDark = prefs.getBoolean("is_dark_mode", false);
 
         AppCompatDelegate.setDefaultNightMode(isDark ?
                 AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
+        // Применяем динамические цвета и тему при запуске
+        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 
     // МЕТОДЫ ДОЛЖНЫ БЫТЬ ТУТ (ВНЕ onCreate)

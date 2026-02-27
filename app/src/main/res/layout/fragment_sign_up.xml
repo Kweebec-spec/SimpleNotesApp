@@ -71,9 +71,9 @@
         android:text="Sign up"
         android:textSize="55px"
         android:layout_marginTop="35dp"
-        app:backgroundTint="?attr/colorSecondary"
+        app:backgroundTint="@color/button_background_color_selector"
         android:layout_gravity="center"
-        android:textColor="?attr/colorOnSecondary"
+        android:textColor="@color/button_text_color_selector"
         />
 
 </LinearLayout>

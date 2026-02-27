@@ -32,14 +32,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             app:srcCompat="@drawable/sharp_add_circle_50"
-            android:layout_gravity="left"/>
+            android:layout_gravity="left"
+            />
 
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingVertical="8dp"
             tools:listitem="@layout/item_note"
