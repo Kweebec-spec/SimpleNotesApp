@@ -13,9 +13,18 @@ import com.google.android.material.color.DynamicColors;
 
 public class MyApplication extends Application {
 
+
+    AppDatabase appDatabase;
+    NotesRepository notesRepository;
+    UserRepository userRepository;
+    ThemeRepository themeRepository;
     @Override
     public void onCreate() {
         super.onCreate();
+        appDatabase = AppDatabase.getInstance(this);
+        notesRepository = NotesRepository.getInstance(appDatabase.noteDao(), appDatabase.noteItemDao());
+        userRepository = UserRepository.getInstance(appDatabase.userDao());
+        themeRepository = ThemeRepository.getInstance(appDatabase.themeDao());
 
 
 
@@ -29,23 +38,16 @@ public class MyApplication extends Application {
         DynamicColors.applyToActivitiesIfAvailable(this);
     }
 
-    // МЕТОДЫ ДОЛЖНЫ БЫТЬ ТУТ (ВНЕ onCreate)
-
+    // Теперь просто возвращаем сохранённые экземпляры
     public NotesRepository getNotesRepository() {
-        // Убедись, что название базы AppDatabase или NoteDatabase (как у тебя в проекте)
-        AppDatabase db = AppDatabase.getInstance(this);
-        // Передаем оба DAO, как мы писали в прошлом шаге
-        return NotesRepository.getInstance(db.noteDao(), db.noteItemDao());
+        return notesRepository;
     }
 
-    // Если у тебя есть отдельный репозиторий для пользователей
     public UserRepository getUserRepository() {
-        AppDatabase db = AppDatabase.getInstance(this);
-        return UserRepository.getInstance(db.userDao());
+        return userRepository;
     }
 
     public ThemeRepository getThemeRepository() {
-        AppDatabase db = AppDatabase.getInstance(this);
-        return ThemeRepository.getInstance(db.themeDao());
+        return themeRepository;
     }
 }

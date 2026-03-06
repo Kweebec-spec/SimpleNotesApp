@@ -38,7 +38,7 @@ public class NotesRepository {
         return noteDao.getNotesForUser(userId);
     }
     public LiveData<List<PreviewNoteWithItemsThemes>> getNotesWithPreview(long userId) {
-
+        noteDao.testQuery(userId);
         return noteDao.getNotesWithPreview(userId);
     }
 

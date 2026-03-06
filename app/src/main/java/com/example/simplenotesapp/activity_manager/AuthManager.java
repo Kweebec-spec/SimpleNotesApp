@@ -18,12 +18,14 @@ public class AuthManager {
         this.userRepository = ((MyApplication) context.getApplicationContext()).getUserRepository();
     }
 
+
+
     public void login(User user, boolean shouldRemember) {
         // Оптимизация: открываем один раз, записываем всё и сохраняем один раз
         prefs.edit()
                 .putLong("userid", user.getId())
                 .putBoolean("remember_me", shouldRemember)
-                .apply();
+                .commit();
     }
 
     public void logout() {
@@ -45,7 +47,9 @@ public class AuthManager {
     }
 
     public Long getId() {
-        // Если ID не найден, лучше возвращать -1, чтобы знать, что юзера нет
-        return prefs.getLong("userid", -1L);
+        if (!prefs.contains("userid")) {
+            return null; // ключа нет
+        }
+        return prefs.getLong("userid", -1L); // ключ есть, возвращаем значение
     }
 }

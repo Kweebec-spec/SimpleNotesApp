@@ -133,7 +133,6 @@ public class AuthViewModel extends ViewModel {
                 return;
             }
 
-            // Создаём объект User (без id, т.к. он сгенерируется БД)
             User newUser = new User(username, password, email);
 
             // Добавляем пользователя в БД через репозиторий (метод с колбэком, вернёт пользователя с id)

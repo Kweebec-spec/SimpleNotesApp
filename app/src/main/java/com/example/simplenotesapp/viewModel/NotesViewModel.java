@@ -31,7 +31,7 @@ public class NotesViewModel extends ViewModel {
     }
 
     public void updateNote(NoteEntity note) {
-        repository.upsertNote(note);
+        repository.updateNote(note);
     }
 
     public void deleteNote(NoteEntity note) {

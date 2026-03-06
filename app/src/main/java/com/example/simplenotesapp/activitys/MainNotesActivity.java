@@ -80,18 +80,12 @@ public class MainNotesActivity extends AppCompatActivity {
                 // Лог поможет вам увидеть проблему в Logcat
                 android.util.Log.d("DEBUG_ID", "Current User ID: " + currentId);
 
-                if (currentId == null || currentId == 0) {
+                if (currentId == null || currentId <= 0) {
                     Toast.makeText(MainNotesActivity.this, "Ошибка: ID пользователя не найден!", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 NoteEntity noteEntity = new NoteEntity();
-                noteEntity.userId = currentId;
-
-                // 2. Устанавливаем базовые значения (необязательно, но полезно)
-                noteEntity.previewTitle = "Новая заметка";
-                noteEntity.createdAt = System.currentTimeMillis();
-
                 notesViewModel.upsertNote(noteEntity);
             }
         });

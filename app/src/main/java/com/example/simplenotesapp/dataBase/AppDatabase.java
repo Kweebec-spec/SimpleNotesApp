@@ -14,7 +14,7 @@ import com.example.simplenotesapp.dataBase.entity.ThemeEntity;
 import com.example.simplenotesapp.dataBase.dao.UserDao;
 import com.example.simplenotesapp.dataBase.entity.UserEntity;
 
-@Database(entities = {NoteEntity.class, NoteItemEntity.class, ThemeEntity.class, UserEntity.class}, version = 1)
+@Database(entities = {NoteEntity.class, NoteItemEntity.class, ThemeEntity.class, UserEntity.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;

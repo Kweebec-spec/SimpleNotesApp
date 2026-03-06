@@ -1,5 +1,7 @@
 package com.example.simplenotesapp.adapters;
 
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,14 +55,20 @@ public class previewNotesAdapter extends RecyclerView.Adapter<previewNotesAdapte
                 .format(new Date(current.note.createdAt));
         holder.noteTimeStamp.setText(time);
 
-        try {
-            int colorInt = android.graphics.Color.parseColor(current.displayColor);
-            holder.top_note_section.setBackgroundColor(colorInt);
-        } catch (Exception e) {
-            // На случай, если в базе оказался текст, который нельзя превратить в цвет
-            holder.top_note_section.setBackgroundColor(android.graphics.Color.LTGRAY);
-        }
+        Drawable backgroundDrawable = holder.themeColorView.getBackground();
 
+        if (backgroundDrawable instanceof GradientDrawable) {
+            GradientDrawable shape = (GradientDrawable) backgroundDrawable.mutate();
+            try {
+                // Убедитесь, что current.displayColor содержит строку вида "#RRGGBB"
+                int colorInt = android.graphics.Color.parseColor(current.displayColor);
+                shape.setColor(colorInt);
+            } catch (Exception e) {
+                // Если цвет некорректный (например, пустая строка или null)
+                shape.setColor(android.graphics.Color.LTGRAY);
+            }
+
+        }
     }
 
     @Override
