@@ -2,7 +2,10 @@ package com.example.simplenotesapp.activitys;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,11 +30,18 @@ public class MainNotesActivity extends AppCompatActivity {
     private ImageView addNoteBtn;
     private ImageView openBottomSheetMenu;
     private AuthManager authManager;
+    private ImageView userPhoto;
+    private TextView helloUserTxtV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        helloUserTxtV = findViewById(R.id.helloUserTxt);
+
+
+        userPhoto = findViewById(R.id.userPhoto);
 
         // 1. Инициализируем ВСЕ View компоненты
         addNoteBtn = findViewById(R.id.addNoteBtn);
@@ -64,8 +74,6 @@ public class MainNotesActivity extends AppCompatActivity {
             }
         });
 
-
-// Исправленный observer
         notesViewModel.getAllNotes().observe(this, relationNotes -> {
             // Используем новый метод маппера
             adapter.updateList(relationNotes);
@@ -77,11 +85,10 @@ public class MainNotesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Long currentId = authManager.getId();
 
-                // Лог поможет вам увидеть проблему в Logcat
                 android.util.Log.d("DEBUG_ID", "Current User ID: " + currentId);
 
                 if (currentId == null || currentId <= 0) {
-                    Toast.makeText(MainNotesActivity.this, "Ошибка: ID пользователя не найден!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainNotesActivity.this, "The ID of user didn't found !", Toast.LENGTH_LONG).show();
                     return;
                 }
 

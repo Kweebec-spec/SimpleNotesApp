@@ -5,7 +5,68 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
+
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="?attr/colorSurface">
+        <ImageView
+            android:id="@+id/userPhoto"
+            android:src="@drawable/outline_man_4_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/helloUserTxt"
+            app:layout_constraintLeft_toLeftOf="parent"
+            />
+
+        <TextView
+
+            android:id="@+id/helloUserTxt"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/hello_user_txt_bg"
+            android:text="Hello User !"
+            android:textColor="?attr/colorOnTertiaryContainer"
+            android:textStyle="bold"
+            android:gravity="left|center"
+            android:paddingStart="20dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingEnd="20dp"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/userPhoto"
+
+            />
+        <ImageView
+            android:id="@+id/openBottomSheetMenu"
+            android:src="@drawable/outline_settings_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <!-- Основной контент приложения -->
     <LinearLayout
@@ -16,25 +77,126 @@
         android:background="?attr/colorSurface"
         android:weightSum="100">
 
-        <ImageView
-            android:id="@+id/openBottomSheetMenu"
-            android:src="@drawable/menu_settings_ic"
-            android:layout_width="wrap_content"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/search_section_bg"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:id="@+id/searchBar_section"
+            >
 
-            android:layout_marginBottom="28dp"
 
-            android:layout_weight="4"/>
+            <LinearLayout
+
+                android:id="@+id/searchLayout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:orientation="horizontal"
+                android:background="@drawable/note_search_bar_bg"
+                android:paddingStart="8dp"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:weightSum="6"
+
+                >
+
+                <EditText
+                    android:id="@+id/searchInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6.09"
+                    android:hint="Search"
+                    android:background="@null"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorPrimary"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:background="@drawable/search_bar_btns_bg"
+                    android:layout_marginEnd="4dp"
+                    >
+
+                <ImageButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_search"
+                    android:background="@drawable/magnifying_glass_bg"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/filterButton"/>
+
+                <ImageButton
+                    android:id="@+id/filterButton"
+                    android:layout_width="35dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_arrow_expand_circle"
+                    android:background="@null"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/searchButton"/>
+
+               </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+
+                android:id="@+id/searchThemeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/searchLayout"
+                >
+
+                <EditText
+                    android:id="@+id/searchTheme"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Search"
+                    android:background="@null"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorSecondary"/>
+
+
+                <ImageButton
+                    android:id="@+id/dropDownBtn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/outline_arrow_drop_down_24"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_marginEnd="30dp"/>
+
+            </LinearLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/addNoteBtn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
+
             app:srcCompat="@drawable/sharp_add_circle_50"
             android:layout_gravity="left"
             />
-
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -48,10 +210,4 @@
             android:layout_weight="95" />
 
     </LinearLayout>
-
-
-
-
-
-
 </LinearLayout>

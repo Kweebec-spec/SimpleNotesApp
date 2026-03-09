@@ -8,7 +8,7 @@ import com.example.simplenotesapp.dataBase.entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mapper {
+public class Converter {
 
     //User mapper functions
     public static User toModel(UserEntity userEntity) {

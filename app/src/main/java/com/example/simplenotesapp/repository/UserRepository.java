@@ -3,7 +3,7 @@ import android.os.Handler;
 import android.os.Looper;
 import com.example.simplenotesapp.dataBase.dao.UserDao;
 import com.example.simplenotesapp.dataBase.entity.UserEntity;
-import com.example.simplenotesapp.model.Mapper;
+import com.example.simplenotesapp.model.Converter;
 import com.example.simplenotesapp.model.User;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,7 +40,7 @@ public class UserRepository {
 
     public void addUser(User user, Callback<User> callback) {
         executor.execute(() -> {
-            UserEntity entity = Mapper.toEntity(user);
+            UserEntity entity = Converter.toEntity(user);
             long newId = userDao.upsert(entity);
 
             if (newId != -1) { // Room возвращает -1 при ошибке
@@ -55,7 +55,7 @@ public class UserRepository {
     public void getUserByEmail(String email, Callback<User> callback) {
         executor.execute(() -> {
             UserEntity entity = userDao.getUserByEmail(email);
-            User user = (entity != null) ? Mapper.toModel(entity) : null;
+            User user = (entity != null) ? Converter.toModel(entity) : null;
 
             new Handler(Looper.getMainLooper()).post(() -> callback.onComplete(user));
         });
