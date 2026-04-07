@@ -6,35 +6,44 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.simplenotesapp.MyApplication;
 import com.example.simplenotesapp.R;
 import com.example.simplenotesapp.repository.UserRepository;
+import com.example.simplenotesapp.utils.KeyboardUtils;
 import com.example.simplenotesapp.viewModel.AuthViewModel;
 import com.example.simplenotesapp.activity_manager.AuthManager;
+import com.example.simplenotesapp.viewModel.AuthViewModelFactory;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.jetbrains.annotations.Nullable;
 
 public class SignUpFragment extends Fragment {
 
+
     // UI элементы
-    EditText etUsername, etEmail, etPassword;
-    MaterialButton btnSignUp;
+    private ScrollView scrollView;
+    private TextInputEditText etUsername, etEmail, etPassword;
+    private TextInputLayout etUsernameL, etEmailL, etPasswordL;
+    private MaterialButton btnSignUp;
 
     // Репозиторий, ViewModel, менеджер сессии
-    UserRepository userRepository;
-    AuthManager authManager;
-    AuthViewModel authViewModel;
+    private UserRepository userRepository;
+    private AuthViewModel authViewModel;
 
     // ViewPager для переключения между фрагментами (логин/регистрация)
-    ViewPager2 viewPager;
+    private ViewPager2 viewPager;
+
+
 
     @Nullable
     @Override
@@ -44,22 +53,35 @@ public class SignUpFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(v, savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+
+        MyApplication app = (MyApplication) requireActivity().getApplication();
+
+        etUsernameL = view.findViewById(R.id.etUsernameL);
+        etPasswordL = view.findViewById(R.id.etPasswordL);
+        etEmailL = view.findViewById(R.id.etEmailL);
+
+
+        scrollView = view.findViewById(R.id.scrollView1);
         // Инициализация View
-        etUsername = v.findViewById(R.id.etUsername);
-        etEmail = v.findViewById(R.id.etEmail);
-        etPassword = v.findViewById(R.id.etPassword);
-        btnSignUp = v.findViewById(R.id.btnSignUp);
+        etUsername = view.findViewById(R.id.etUsername);
+        etEmail = view.findViewById(R.id.etEmail);
+        etPassword = view.findViewById(R.id.etPassword);
+        btnSignUp = view.findViewById(R.id.btnSignUp);
 
         // Получаем ViewPager из активности (чтобы переключаться между фрагментами)
         viewPager = getActivity().findViewById(R.id.viewPager);
 
         // Создаём репозиторий и ViewModel
-        userRepository = ((MyApplication) requireActivity().getApplication()).getUserRepository();
-        authViewModel = new AuthViewModel(userRepository);
-        authManager = new AuthManager(requireContext()); // может пригодиться, если после регистрации сразу входить
+        userRepository = app.getUserRepository();
+        authViewModel = new ViewModelProvider(this, new AuthViewModelFactory(userRepository))
+                .get(AuthViewModel.class);
+
+
+        KeyboardUtils.setupScrollViewKeyboardDismiss(scrollView, requireActivity());
+
 
         // TextWatcher для автоматического преобразования вводимого email в нижний регистр
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -106,17 +128,22 @@ public class SignUpFragment extends Fragment {
     private void setupObservers() {
         // Ошибка имени
         authViewModel.getUsernameError().observe(getViewLifecycleOwner(), error -> {
-            etUsername.setError(error);
+            etUsernameL.setError(error);
+            etUsernameL.setErrorEnabled(error != null);
+
         });
 
         // Ошибка пароля
         authViewModel.getPasswordError().observe(getViewLifecycleOwner(), error -> {
-            etPassword.setError(error);
+            etPasswordL.setError(error);
+            etPasswordL.setErrorEnabled(error != null);
         });
 
         // Ошибка email
         authViewModel.getEmailError().observe(getViewLifecycleOwner(), error -> {
-            etEmail.setError(error);
+            etEmailL.setError(error);
+            etEmailL.setErrorEnabled(error != null);
+
         });
 
         // Общая ошибка (показываем Toast)

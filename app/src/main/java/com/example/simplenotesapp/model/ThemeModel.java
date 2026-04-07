@@ -8,6 +8,7 @@ public class ThemeModel {
     public ThemeModel(String name, String color, long id) {
         this.name = name;
         this.color = color;
+        this.id = id;
     }
 
     public String getName() {

@@ -2,15 +2,23 @@ package com.example.simplenotesapp.model;
 
 public class Note {
     private long id;
+    private long themeId;
+    private long userid;
     private String title;
     private String content;
     private long timestamp;
     private String color;
 
-    public Note(long id, String previewTitle, String previewText, long createdAt, String color) { }
 
-    public Note(long id, String title, String content, long timestamp) {
+    public Note() {
+
+    }
+
+
+    public Note(long id, long themeId, long userid, String title, String content, long timestamp, String color) {
         this.id = id;
+        this.themeId = themeId;
+        this.userid = userid;
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
@@ -34,4 +42,19 @@ public class Note {
     public void setColor(String color) { this.color = color; }
 
 
+    public long getThemeId() {
+        return themeId;
+    }
+
+    public void setThemeId(long themeId) {
+        this.themeId = themeId;
+    }
+
+    public long getUserid() {
+        return userid;
+    }
+
+    public void setUserid(long userid) {
+        this.userid = userid;
+    }
 }

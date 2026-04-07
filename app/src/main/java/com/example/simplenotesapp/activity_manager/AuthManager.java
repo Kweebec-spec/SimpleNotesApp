@@ -2,54 +2,64 @@ package com.example.simplenotesapp.activity_manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.example.simplenotesapp.MyApplication;
-import com.example.simplenotesapp.model.User;
-import com.example.simplenotesapp.repository.UserRepository;
 
 public class AuthManager {
-    private final SharedPreferences prefs;
-    private final UserRepository userRepository;
+    private final  SharedPreferences prefs;
+    private static final String PREF_NAME = "auth_prefs";
+    private static final String KEY_USER_ID = "userid";
+    private static final String KEY_REMEMBER_ME = "remember_me";
+    private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_USER_NAME = "user_name";
 
     public AuthManager(Context context) {
-        this.prefs = context.getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
-
-        // ПРАВИЛЬНО: берем репозиторий из нашего Application
-        // Это гарантирует, что мы используем тот же объект, что и везде
-        this.userRepository = ((MyApplication) context.getApplicationContext()).getUserRepository();
+        this.prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-
-
-    public void login(User user, boolean shouldRemember) {
-        // Оптимизация: открываем один раз, записываем всё и сохраняем один раз
+    public void login(long userId, String email, String username, boolean shouldRemember) {
         prefs.edit()
-                .putLong("userid", user.getId())
-                .putBoolean("remember_me", shouldRemember)
-                .commit();
-    }
-
-    public void logout() {
-        boolean currentTheme = prefs.getBoolean("is_dark_mode", false);
-
-        // Очищаем и тут же возвращаем тему в одной транзакции
-        prefs.edit()
-                .clear()
-                .putBoolean("is_dark_mode", currentTheme)
+                .putLong(KEY_USER_ID, userId)
+                .putString(KEY_USER_EMAIL, email)
+                .putString(KEY_USER_NAME, username)
+                .putBoolean(KEY_REMEMBER_ME, shouldRemember)
                 .apply();
     }
 
-    public void setRemember_me(boolean flag) {
-        prefs.edit().putBoolean("remember_me", flag).apply();
+    public void logout() {
+        prefs.edit().clear().apply();
     }
 
-    public boolean Y_remember_me() {
-        return prefs.getBoolean("remember_me", false);
+    public void setRememberMe(boolean flag) {
+        prefs.edit().putBoolean(KEY_REMEMBER_ME, flag).apply();
+    }
+
+    public boolean isRememberMe() {
+        return prefs.getBoolean(KEY_REMEMBER_ME, false);
     }
 
     public Long getId() {
-        if (!prefs.contains("userid")) {
-            return null; // ключа нет
+        if (!prefs.contains(KEY_USER_ID)) {
+            return null;
         }
-        return prefs.getLong("userid", -1L); // ключ есть, возвращаем значение
+        return prefs.getLong(KEY_USER_ID, -1L);
+    }
+
+    public String getEmail() {
+        return prefs.getString(KEY_USER_EMAIL, null);
+    }
+
+    public String getUserName() {
+        return prefs.getString(KEY_USER_NAME, null);
+    }
+
+    public boolean isLoggedIn() {
+        return prefs.contains(KEY_USER_ID) && prefs.getLong(KEY_USER_ID, -1L) > 0;
+    }
+
+    public void updateUserName(String newName) {
+        prefs.edit().putString(KEY_USER_NAME, newName).apply();
+    }
+
+    public void updateUserEmail(String newEmail) {
+        prefs.edit().putString(KEY_USER_EMAIL, newEmail).apply();
     }
 }

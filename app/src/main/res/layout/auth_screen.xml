@@ -1,52 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurfaceContainer">
 
     <com.google.android.material.card.MaterialCardView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="30dp"
-    app:cardElevation="4dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="?attr/colorOutlineVariant"
-    app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true">
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorOutlineVariant"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="16dp"
+        android:maxHeight="600dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="?attr/colorOutlineVariant"
-            app:tabIndicatorFullWidth="true"
-            app:tabGravity="fill"
-            app:tabMode="fixed"
-            app:tabIndicatorGravity="top"
-            app:tabIndicatorColor="?attr/colorPrimary"
-            app:tabIndicatorHeight="4dp"
-            app:tabSelectedTextColor="?attr/colorPrimary"
-            app:tabTextColor="?attr/colorOnSurfaceVariant"
-            app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Button" />
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="400dp" />
 
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/colorOutlineVariant"
+                app:tabIndicatorFullWidth="true"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabIndicatorGravity="top"
+                app:tabIndicatorColor="?attr/colorPrimary"
+                app:tabIndicatorHeight="4dp"
+                app:tabSelectedTextColor="?attr/colorPrimary"
+                app:tabTextColor="?attr/colorOnSurfaceVariant"
+                app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Button" />
 
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

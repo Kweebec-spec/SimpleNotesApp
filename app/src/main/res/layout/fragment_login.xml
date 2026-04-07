@@ -1,99 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_marginTop="20dp"
-    android:padding="20dp">
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:id="@+id/scrollView2"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-            <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:padding="20dp">
 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurface"
-                android:text="Login"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="40dp"
-                android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorSecondary"
+            android:text="Login"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etUsernameL"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxStrokeWidth="2dp"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/colorSecondary"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/outline_man_4_24"
+            app:startIconTint="?attr/colorSecondary"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            android:layout_marginBottom="16dp"
+            app:errorEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
-                android:layout_width="300dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="30dp"
-                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
                 android:hint="Username"
+                android:textColor="@color/edit_stroke_dr_selector2"
                 android:inputType="text"
-                android:layout_gravity="center"
-                android:drawableLeft="@drawable/outline_man_4_24"
-                android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"
-                android:textColor="?attr/colorPrimaryVariant"/>
+                android:background="@null"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPasswordL"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxStrokeWidth="2dp"
+
+            app:hintEnabled="false"
+            app:endIconMode="password_toggle"
+            app:endIconTint="?attr/colorPrimary"
+            app:startIconDrawable="@drawable/outline_lock_24"
+            app:startIconTint="?attr/colorPrimary"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:boxCollapsedPaddingTop="8dp"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
-                android:layout_width="300dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="30dp"
-                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
                 android:hint="Password"
+                android:textColor="@color/icon_color_selector1"
                 android:inputType="textPassword"
-                android:minHeight="48dp"
-                android:layout_gravity="center"
-                android:drawableLeft="@drawable/outline_lock_24"
-                android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"
-                android:textColor="?attr/colorPrimaryVariant"/>
+                android:background="@null"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEmailL"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_g_bkg"
+            app:boxBackgroundMode="none"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/colorTertiary"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/email_24"
+            app:startIconTint="?attr/colorTertiary"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:boxCollapsedPaddingTop="8dp"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
-                android:layout_width="300dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="30dp"
-                android:padding="8dp"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:layout_gravity="center"
-                android:drawableLeft="@drawable/baseline_alternate_email_24"
-                android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"
-                android:textColor="?attr/colorPrimaryVariant"/>
-
-            <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
+                android:hint="Email"
+                android:textColor="@color/edit_stroke_dr_selector3"
+                android:inputType="textEmailAddress"
+                android:background="@null"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/checkbox_remember_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:layout_marginStart="5dp"
+                android:text="Remember me"
+                android:tint="?attr/colorControlNormal"
+                android:textColor="?attr/colorPrimaryVariant"
+                android:focusable="true"
+                android:clickable="true"
+                android:textStyle="bold"/>
 
-                <!-- Checkbox placed ABOVE the button -->
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/checkbox_remember_me"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:text="Remember me"
-                    android:tint="?attr/colorControlNormal"
-                    android:textColor="?attr/colorPrimaryVariant"
-                    android:button="@drawable/checkbox_ripple_circle"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Login"
+                android:layout_marginTop="15dp"
+                android:textSize="20sp"
+                app:cornerRadius="30dp"
+                app:backgroundTint="?attr/colorPrimary"
+                app:rippleColor="?attr/colorPrimaryInverse"
+                android:textColor="?attr/colorOnPrimary"
+                android:focusable="true"
+                android:clickable="true"/>
 
-                    android:textStyle="bold"
-                    />
+        </LinearLayout>
 
-                <!-- Button placed BELOW the checkbox -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="Login"
-                    android:textSize="20sp"
-                    app:cornerRadius="30dp"
-                    app:backgroundTint="@color/button_background_color_selector"
-                    android:textColor="@color/button_text_color_selector" />
-
-            </LinearLayout>
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

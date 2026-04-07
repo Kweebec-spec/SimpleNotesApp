@@ -1,135 +1,272 @@
 package com.example.simplenotesapp.fragments_folder;
 
-import android.content.Context;
+import android.Manifest;
+import android.app.AlarmManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.navigation.Navigation;
 
-import com.example.simplenotesapp.activitys.AuthScreen;
+import com.example.simplenotesapp.MyApplication;
 import com.example.simplenotesapp.R;
 import com.example.simplenotesapp.activity_manager.AuthManager;
+import com.example.simplenotesapp.activity_manager.NotificationPrefsManager;
+import com.example.simplenotesapp.activity_manager.ThemeManager;
+import com.example.simplenotesapp.activitys.AuthScreen;
+import com.example.simplenotesapp.utils.NotificationHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class BottomSheetMenu extends BottomSheetDialogFragment {
 
-    private void showAboutDialog() {
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Natatki")
-                .setMessage("Ver 1.0.0\n\n Natatki - notes app here for you to save your thoughts and goal and any text business you have on your mind ! \n\nMade with great effort and help of internet")
-                .setPositiveButton("Understood", (dialog, which) -> dialog.dismiss())
-                .setIcon(R.drawable.ic_info_outline) // Здесь иконка информации
-                .show();
-    }
+    private static final int PERMISSION_REQUEST_NOTIFICATIONS = 1001;
 
-    private void saveDarkModeThemePreference(boolean isDark) {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("is_dark_mode", isDark).apply();
-    }
-    private boolean isDarkModeActive() {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
-        return prefs.getBoolean("is_dark_mode", false);
-    }
+    // поля класса — используются в нескольких методах
+    private boolean isWaitingForPermission = false;
+    private SwitchMaterial switchNotifications;
+    private AuthManager authManager;
+    private ThemeManager themeManager;
+    private NotificationPrefsManager notificationPrefsManager;
 
     @Override
     public int getTheme() {
-        return R.style.AppBottomSheetDialogTheme; // Подключаем наш стиль из themes.xml
+        return R.style.AppBottomSheetDialogTheme;
     }
 
-    // делает замеры всего в приложении и размешает на экране примерно так
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.layout_settings_bottom_sheet, container, false);
-
-        return v;
+        return inflater.inflate(R.layout.layout_settings_bottom_sheet, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        AuthManager authManager = new AuthManager(view.getContext());
-        SharedPreferences prefs = view.getContext().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+        MyApplication app = (MyApplication) requireActivity().getApplication();
+        authManager = app.getAuthManager();
+        themeManager = app.getThemeManager();
+        notificationPrefsManager = app.getNotificationPrefsManager();
 
-        // find all needed from our xml file to use it and add functionality to it.
+        // Views
         SwitchMaterial switchTheme = view.findViewById(R.id.switch_theme);
-        LinearLayout switchTheme_item = view.findViewById(R.id.toggleTheme_item);
-        LinearLayout notifications_item = view.findViewById(R.id.notifications_item);
-        SwitchMaterial switchNotifications = view.findViewById(R.id.switch_notifications);
-        LinearLayout logout_item = view.findViewById(R.id.logout_item);
-        LinearLayout about_item = view.findViewById(R.id.about_item);
-        LinearLayout extra_settings_item = view.findViewById(R.id.extra_settings_item);
+        LinearLayout switchThemeItem = view.findViewById(R.id.toggleTheme_item);
+        LinearLayout notificationsItem = view.findViewById(R.id.notifications_item);
+        switchNotifications = view.findViewById(R.id.switch_notifications);
+        LinearLayout logoutItem = view.findViewById(R.id.logout_item);
+        LinearLayout aboutItem = view.findViewById(R.id.about_item);
         View triggerLine = view.findViewById(R.id.triggerLine);
 
-        switchTheme.setChecked(isDarkModeActive());
+        // Начальное состояние — берём из менеджеров
+        switchTheme.setChecked(themeManager.isDarkModeActive());
+        switchNotifications.setChecked(notificationPrefsManager.isEnabled());
 
-        // after click on the line we expand our menu so it can be seen and used by user.
-        triggerLine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        // Тема
+        switchTheme.setOnCheckedChangeListener((button, isChecked) -> {
+            themeManager.saveDarkModeThemePreference(isChecked);
+            AppCompatDelegate.setDefaultNightMode(isChecked ?
+                    AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        });
+        switchThemeItem.setOnClickListener(v -> switchTheme.setChecked(!switchTheme.isChecked()));
 
-                View parent = (View) view.getParent();
-                com.google.android.material.bottomsheet.BottomSheetBehavior<View> behavior =
-                        com.google.android.material.bottomsheet.BottomSheetBehavior.from(parent);
+        // Уведомления — свитч
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isWaitingForPermission) return;
+            if (isChecked) handleEnableNotifications();
+            else disableNotifications();
+        });
 
-                if (behavior.getState() != com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED) {
-                    behavior.setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED);
-                } else {
-                    dismiss();
-                }
+        // Уведомления — клик на весь item открывает настройки
+        notificationsItem.setOnClickListener(v -> {
+            dismiss();
+            if (getActivity() != null) {
+                Navigation.findNavController(getActivity(), R.id.nav_host_fragment)
+                        .navigate(R.id.notificationSettingsFragment);
             }
         });
 
-
-        switchTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(@NonNull CompoundButton compoundButton, boolean isChecked) {
-                // 1. Сохраняем выбор
-                saveDarkModeThemePreference(isChecked);
-
-                if (getActivity() != null) {
-                    // 2. Устанавливаем режим (это спровоцирует смену ресурсов)
-                    AppCompatDelegate.setDefaultNightMode(isChecked ?
-                            AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                }
+        // Expand/collapse
+        triggerLine.setOnClickListener(v -> {
+            View parent = (View) v.getParent();
+            com.google.android.material.bottomsheet.BottomSheetBehavior<View> behavior =
+                    com.google.android.material.bottomsheet.BottomSheetBehavior.from(parent);
+            if (behavior.getState() != com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                behavior.setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED);
+            } else {
+                dismiss();
             }
         });
 
-       switchTheme_item.setOnClickListener(v -> {
-            // Просто меняем состояние свитча,
-            // а switchTheme.setOnCheckedChangeListener (выше) сделает остальную работу!
-            switchTheme.setChecked(!switchTheme.isChecked());
+        // Logout
+        logoutItem.setOnClickListener(v -> {
+            authManager.logout();
+            Intent intent = new Intent(getActivity(), AuthScreen.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            if (getActivity() != null) getActivity().finish();
         });
 
-        logout_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                authManager.logout();
-                Intent intent = new Intent(getActivity(), AuthScreen.class);
-                startActivity(intent);
-                if (getActivity() != null) {
-                    getActivity().finish(); // Вызываем у Activity
-                }
+        // About
+        aboutItem.setOnClickListener(v -> showAboutDialog());
+    }
+
+    // ─── Notifications logic ──────────────────────────────────────────────────
+
+    private void handleEnableNotifications() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermission();
+                return;
             }
-        });
-
-        about_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAboutDialog();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = requireContext().getSystemService(AlarmManager.class);
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                requestExactAlarmPermission();
+                return;
             }
+        }
+        enableNotifications();
+    }
+
+    private void enableNotifications() {
+        // ✅ данные из NotificationManager, логика в saveSettingsAndSchedule
+        notificationPrefsManager.saveSettingsAndSchedule(
+                requireContext(),
+                true,
+                notificationPrefsManager.getFrequency(),
+                notificationPrefsManager.getHour(),
+                notificationPrefsManager.getMinute(),
+                notificationPrefsManager.getThemeId(),
+                notificationPrefsManager.getThemeName()
+        );
+        Toast.makeText(requireContext(), "Notifications on", Toast.LENGTH_SHORT).show();
+    }
+
+    private void disableNotifications() {
+        // ✅ только меняем enabled, остальные настройки сохраняем
+        notificationPrefsManager.saveSettingsAndSchedule(
+                requireContext(),
+                false,
+                notificationPrefsManager.getFrequency(),
+                notificationPrefsManager.getHour(),
+                notificationPrefsManager.getMinute(),
+                notificationPrefsManager.getThemeId(),
+                notificationPrefsManager.getThemeName()
+        );
+        Toast.makeText(requireContext(), "Notifications off", Toast.LENGTH_SHORT).show();
+    }
+
+    private void requestNotificationPermission() {
+        isWaitingForPermission = true;
+        switchNotifications.setOnCheckedChangeListener(null);
+        switchNotifications.setChecked(false);
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                PERMISSION_REQUEST_NOTIFICATIONS);
+    }
+
+    private void requestExactAlarmPermission() {
+        isWaitingForPermission = true;
+        switchNotifications.setOnCheckedChangeListener(null);
+        switchNotifications.setChecked(false);
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Exact alarms permission")
+                .setMessage("This app needs permission to schedule exact alarms.\n\nPlease grant it in the system settings.")
+                .setPositiveButton("Open settings", (dialog, which) -> {
+                    startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    isWaitingForPermission = false;
+                    restoreNotificationListener();
+                })
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != PERMISSION_REQUEST_NOTIFICATIONS) return;
+
+        isWaitingForPermission = false;
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            handleEnableNotifications();
+        } else {
+            Toast.makeText(requireContext(), "Permission needed for notifications", Toast.LENGTH_LONG).show();
+            switchNotifications.setOnCheckedChangeListener(null);
+            switchNotifications.setChecked(false);
+            restoreNotificationListener();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isWaitingForPermission = false;
+        if (switchNotifications == null) return;
+
+        boolean isEnabled = notificationPrefsManager.isEnabled();
+
+        // Android 13+ — проверяем разрешение POST_NOTIFICATIONS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && isEnabled) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                notificationPrefsManager.setEnabled(false);
+                NotificationHelper.cancelNotification(requireContext());
+                isEnabled = false;
+            }
+        }
+
+        // Android 12+ — проверяем точные будильники
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isEnabled) {
+            AlarmManager alarmManager = requireContext().getSystemService(AlarmManager.class);
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                notificationPrefsManager.setEnabled(false);
+                NotificationHelper.cancelNotification(requireContext());
+                isEnabled = false;
+                Toast.makeText(requireContext(), "Exact alarm permission revoked. Notifications disabled.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        boolean finalIsEnabled = isEnabled;
+        switchNotifications.post(() -> {
+            switchNotifications.setOnCheckedChangeListener(null);
+            switchNotifications.setChecked(finalIsEnabled);
+            restoreNotificationListener();
         });
+    }
 
+    // ─── Helpers ──────────────────────────────────────────────────────────────
 
+    private void restoreNotificationListener() {
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isWaitingForPermission) return;
+            if (isChecked) handleEnableNotifications();
+            else disableNotifications();
+        });
+    }
+
+    private void showAboutDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Natatki")
+                .setMessage("Ver 1.0.0\n\nNatatki - notes app here for you to save your thoughts and goals!\n\nMade with great effort and help of internet!")
+                .setPositiveButton("Understood", (dialog, which) -> dialog.dismiss())
+                .setIcon(R.drawable.ic_info_outline)
+                .show();
     }
 }

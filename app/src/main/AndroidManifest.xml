@@ -2,6 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- For Android 12+ exact alarms permission -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -12,26 +23,43 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SimpleNotesApp">
-        <activity
-            android:name=".activitys.NoteScreen"
-            android:exported="false" />
-        <activity
-            android:name=".activitys.AuthScreen"
-            android:exported="false" />
 
-        <activity
-            android:name=".activitys.MainNotesActivity"
-            android:exported="false" />
-
+        <!-- Splash Screen - Launcher Activity -->
         <activity
             android:name=".activitys.SplashScreen"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Base.Theme.SimpleNotesApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Auth Screen -->
+        <activity
+            android:name=".activitys.AuthScreen"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".activitys.MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        
+
+        <!-- Notification Receiver -->
+        <receiver
+            android:name=".receivers.NotificationReceiver"
+            android:exported="false" />
+
+        <receiver android:name=".receivers.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

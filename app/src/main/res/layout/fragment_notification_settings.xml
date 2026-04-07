@@ -1,6 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Top section with navigation buttons -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/go_out_of_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@drawable/outline_door_open_50"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+
+            android:id="@+id/bottom_sheet_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@drawable/outline_settings_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/switch_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:text="Notification settings"
+        android:textSize="24sp"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:textColor="?attr/colorPrimary"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" Frequency :"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:textColor="?attr/colorPrimary"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupFrequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/add_theme_bkg">
+
+        <RadioButton
+            android:id="@+id/radioDay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Day"
+            android:checked="true"
+            android:textColor="?attr/colorPrimary"
+            android:buttonTint="?attr/colorPrimary"/>
+
+        <RadioButton
+            android:id="@+id/radioWeek"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Week"
+            android:textColor="?attr/colorSecondary"
+            android:buttonTint="?attr/colorSecondary"/>
+
+        <RadioButton
+            android:id="@+id/radioMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Month"
+            android:textColor="?attr/colorTertiary"
+            android:buttonTint="?attr/colorTertiary"/>
+
+        <RadioButton
+            android:id="@+id/radioYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Year"
+            android:textColor="?attr/colorPrimaryInverse"
+            android:buttonTint="?attr/colorPrimaryInverse"
+            />
+    </RadioGroup>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time :"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="09:00"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="18sp"
+        android:padding="8dp"
+        android:background="@drawable/add_theme_bkg"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notes Theme:"
+        android:textSize="16sp"
+
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/add_theme_bkg">
+
+
+    <Spinner
+        android:id="@+id/spinnerThemes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColor="?attr/colorPrimary"
+        android:backgroundTint="?attr/colorPrimary"/>
+
+
+
+</LinearLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSave"
+        android:textColor="?attr/colorOnTertiary"
+        app:backgroundTint="?attr/colorTertiary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Settings"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="0dp"/>
+</LinearLayout>

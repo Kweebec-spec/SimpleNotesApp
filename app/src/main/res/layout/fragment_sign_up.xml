@@ -1,79 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_marginTop="20dp"
-    android:padding="20dp"
-    >
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:id="@+id/scrollView1"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:padding="20dp">
 
+        <TextView
+            android:textColor="?attr/colorSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign-up"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
 
-                <TextView
-                android:textColor="?attr/colorOnSurface"
-                android:layout_width="wrap_content"
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etUsernameL"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_n_bkg"
+            app:boxBackgroundMode="none"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/colorSecondary"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/outline_man_4_24"
+            app:startIconTint="?attr/colorSecondary"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:boxCollapsedPaddingTop="8dp"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign-up"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="40dp"
-                android:layout_gravity="center"/>
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
+                android:hint="Username"
+                android:textColor="@color/edit_stroke_dr_selector2"
+                android:inputType="text"
+                android:background="@null"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/etUsername"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:padding="8dp"
-        android:hint="Username"
-        android:textColor="?attr/colorPrimaryVariant"
-        android:inputType="text"
-        android:layout_gravity="center"
-        android:drawableLeft="@drawable/outline_man_4_24"
-        android:drawablePadding="8dp"
-        android:background="@drawable/edittext_bkg"/>
+        <!-- Password -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPasswordL"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_bkg"
+            app:boxBackgroundMode="none"
+            app:hintEnabled="false"
+            app:endIconMode="password_toggle"
+            app:endIconTint="?attr/colorPrimary"
+            app:startIconDrawable="@drawable/outline_lock_24"
+            app:startIconTint="?attr/colorPrimary"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:boxCollapsedPaddingTop="8dp"
+            android:layout_marginBottom="16dp">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/etPassword"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:padding="8dp"
-        android:hint="Password"
-        android:textColor="?attr/colorPrimaryVariant"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:layout_gravity="center"
-        android:drawableLeft="@drawable/outline_lock_24"
-        android:drawablePadding="8dp"
-        android:background="@drawable/edittext_bkg"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
+                android:hint="Password"
+                android:textColor="@color/icon_color_selector1"
+                android:inputType="textPassword"
+                android:background="@null"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEmailL"
+
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edittext_g_bkg"
+            app:boxBackgroundMode="none"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/colorTertiary"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/email_24"
+            app:startIconTint="?attr/colorTertiary"
+            app:boxCollapsedPaddingTop="8dp"
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
-                android:layout_width="300dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="30dp"
-                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:minHeight="60dp"
+
                 android:hint="Email"
-                android:textColor="?attr/colorPrimaryVariant"
+                android:textColor="@color/edit_stroke_dr_selector3"
                 android:inputType="textEmailAddress"
-                android:layout_gravity="center"
-                android:drawableLeft="@drawable/baseline_alternate_email_24"
-                android:drawablePadding="8dp"
-                android:background="@drawable/edittext_bkg"/>
+                android:background="@null"
+                app:errorTextAppearance="@style/ErrorTextAppearance"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSignUp"
-        app:cornerRadius="30dp"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:text="Sign up"
-        android:textSize="55px"
-        android:layout_marginTop="35dp"
-        app:backgroundTint="@color/button_background_color_selector"
-        android:layout_gravity="center"
-        android:textColor="@color/button_text_color_selector"
-        />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignUp"
+            app:cornerRadius="30dp"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:text="Sign up"
+            android:textSize="55px"
+            android:layout_marginTop="82dp"
+            android:layout_gravity="center"
+            app:backgroundTint="?attr/colorPrimary"
+            app:rippleColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
+            android:focusable="true"
+            android:clickable="true"/>
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

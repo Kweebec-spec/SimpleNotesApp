@@ -1,13 +1,14 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorTertiaryContainer"/>
+    <solid android:color="?attr/colorSurface"/>
 
 
     <size android:height="30dp"/>
+    <stroke android:width="2dp" android:color="?attr/colorPrimary"/>
 
 
     <corners
-        android:bottomLeftRadius="140dp"
-        android:bottomRightRadius="20dp"
-        android:topLeftRadius="20dp"
-        android:topRightRadius="140dp" />
+        android:bottomLeftRadius="360dp"
+        android:bottomRightRadius="360dp"
+        android:topLeftRadius="360dp"
+        android:topRightRadius="360dp" />
 </shape>

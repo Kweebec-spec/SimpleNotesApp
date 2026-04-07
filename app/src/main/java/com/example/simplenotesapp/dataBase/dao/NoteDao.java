@@ -3,12 +3,11 @@ package com.example.simplenotesapp.dataBase.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
+import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Transaction;
 import androidx.room.Update;
 import androidx.room.Upsert;
 
-import com.example.simplenotesapp.dataBase.pojo.PreviewNoteWithItemsThemes;
 import com.example.simplenotesapp.dataBase.entity.NoteEntity;
 
 import java.util.List;
@@ -16,71 +15,59 @@ import java.util.List;
 @Dao
 public interface NoteDao {
 
-    @Transaction // Required because Room runs multiple queries to fetch the Note + Theme
+    @Query("SELECT * FROM notes WHERE userId = :userId AND (themeId = :themeId OR :themeId = -1) AND (title LIKE '%' || :query || '%' OR text LIKE '%' || :query || '%') ORDER BY createdAt DESC")
+    LiveData<List<NoteEntity>> getNotesByThemeAndQuery(long userId, long themeId, String query);
+
+    // GET NOTES
     @Query("SELECT * FROM notes WHERE userId = :userId ORDER BY createdAt DESC")
-    LiveData<List<PreviewNoteWithItemsThemes>> getNotesForUser(long userId);
+    LiveData<List<NoteEntity>> getNotesForUser(long userId);
 
+    @Query("SELECT * FROM notes WHERE note_id = :noteId")
+    LiveData<NoteEntity> getNoteById(long noteId);
 
-    // Временно добавь этот метод для отладки
-    @Query("SELECT * FROM notes WHERE userId = :userId LIMIT 1")
-    LiveData<NoteEntity> testQuery(long userId);
+    @Query("SELECT * FROM notes WHERE note_id = :noteId")
+    NoteEntity getNoteByIdSync(long noteId);
+    @Query("SELECT * FROM notes WHERE themeId = :themeId")
+    List<NoteEntity> getNotesByThemeIdSync(long themeId);
 
-    /**
-     * Получает заметки с превью для конкретного пользователя
-     */
-    @Transaction
-    @Query("SELECT " +
-            // Поля из NoteEntity (перечисляем явно, чтобы избежать конфликтов)
-            "notes.id, " +
-            "notes.themeId, " +
-            "notes.userId, " +
-            "notes.previewTitle, " +
-            "notes.previewText as notePreviewText, " +  // переименовываем, чтобы не путать с вычисляемым
-            "notes.createdAt, " +
-            "notes.color, " +
-            "notes.hasChecklist, " +
+    // SEARCH
+    @Query("SELECT * FROM notes WHERE userId = :userId AND (title LIKE '%' || :query || '%' OR text LIKE '%' || :query || '%') ORDER BY createdAt DESC")
+    LiveData<List<NoteEntity>> searchNotes(long userId, String query);
 
-            // 1. Вычисляем previewText из items
-            "(SELECT GROUP_CONCAT(" +
-            "  CASE WHEN type = 1 THEN (CASE WHEN checked = 1 THEN '☑ ' ELSE '☐ ' END) || text " +
-            "       ELSE text END, " +
-            "  '\n') " +
-            " FROM note_items " +
-            " WHERE note_items.noteId = notes.id " +
-            " ORDER BY note_items.id ASC" +
-            ") AS previewText, " +
+    // LAST CREATED
+    @Query("SELECT * FROM notes ORDER BY note_id DESC LIMIT 1")
+    LiveData<NoteEntity> getLastCreatedNoteLiveData();
 
-            // 2. Формируем displayTitle
-            "CASE WHEN notes.previewTitle IS NULL OR notes.previewTitle = '' " +
-            "     THEN 'Без названия' " +
-            "     ELSE notes.previewTitle " +
-            "END AS displayTitle, " +
+    @Query("SELECT * FROM notes WHERE userId = :userId ORDER BY note_id DESC LIMIT 1")
+    LiveData<NoteEntity> getLastCreatedNoteForUserLiveData(long userId);
 
-            // 3. Получаем цвет из темы
-            "COALESCE((SELECT color FROM themes WHERE id = notes.themeId), '#D3D3D3') AS displayColor " +
+    // COUNT
+    @Query("SELECT COUNT(*) FROM notes WHERE userId = :userId")
+    LiveData<Integer> getNotesCount(long userId);
 
-            "FROM notes " +
-            "WHERE notes.userId = :userId " +
-            "ORDER BY notes.createdAt DESC")
-    LiveData<List<PreviewNoteWithItemsThemes>> getNotesWithPreview(long userId);
+    // INSERT
+    @Insert
+    long insert(NoteEntity note);
 
+    @Insert
+    void insertAll(List<NoteEntity> notes);
 
-
-
-
-
-    @Upsert
-    void upsert(NoteEntity note);
-
+    // UPDATE
     @Update
     void update(NoteEntity note);
 
+    // UPSERT
+    @Upsert
+    void upsert(NoteEntity note);
+
+    // DELETE
     @Delete
     void delete(NoteEntity note);
 
-    // выдает одну заметку один раз и завершается
-    @Query("SELECT * FROM notes WHERE id = :id")
-    NoteEntity getNoteById(long id);
+    @Query("DELETE FROM notes WHERE userId = :userId")
+    void deleteAllNotesForUser(long userId);
 
-
+    // TOUCH FOR REFRESH (обновляет updatedAt для триггера LiveData)
+    @Query("UPDATE notes SET createdAt = :timestamp WHERE userId = :userId")
+    void touchNotesForUser(long userId, long timestamp);
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 2. Наведение мышкой -->
+    <item android:color="?attr/colorTertiary" android:state_hovered="true" />
+
+    <!-- 3. Фокус (когда кнопка выбрана, но не нажата) -->
+    <item android:color="?attr/colorTertiary" android:state_focused="true" />
+
+    <item android:color="?attr/colorTertiary" android:state_checked="true" />
+
+
+    <!-- 4. Обычное состояние -->
+    <item android:color="?attr/colorOutlineVariant" />
+
+</selector>

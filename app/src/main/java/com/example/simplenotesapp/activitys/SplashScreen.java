@@ -10,30 +10,27 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.simplenotesapp.MyApplication;
 import com.example.simplenotesapp.R;
 import com.example.simplenotesapp.activity_manager.AuthManager;
 
 public class SplashScreen extends AppCompatActivity {
 
-    AuthManager authManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-        boolean isDark = prefs.getBoolean("is_dark_mode", false);
-        AppCompatDelegate.setDefaultNightMode(isDark ?
-                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash_screen);
 
 
-        authManager = new AuthManager(this);
+        MyApplication app = (MyApplication) getApplication();
+        AuthManager authManager = app.getAuthManager();
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
-            if(authManager.Y_remember_me()) {
-                Intent intent = new Intent(SplashScreen.this, MainNotesActivity.class);
+            if(authManager.isRememberMe()) {
+                Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

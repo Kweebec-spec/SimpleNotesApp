@@ -3,7 +3,7 @@
 
 
 
-    <stroke android:color="?attr/colorOnSurfaceInverse" android:width="2dp" />
+    <stroke android:color="?attr/colorSurfaceContainer" android:width="2dp" />
 
     <corners
         android:bottomLeftRadius="10dp"

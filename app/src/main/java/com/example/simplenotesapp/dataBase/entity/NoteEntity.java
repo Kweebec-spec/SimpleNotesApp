@@ -1,55 +1,76 @@
 package com.example.simplenotesapp.dataBase.entity;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-/**
- * @Entity: Defines this class as a table in SQLite.
- * foreignKeys: Defines constraints between tables to ensure data integrity.
- * indices: Optimizes database performance for specific columns.
- */
 @Entity(
         tableName = "notes",
         foreignKeys = {
-                // 1. Connection to ThemeEntity
+                @ForeignKey(
+                        entity = UserEntity.class,
+                        parentColumns = "id",
+                        childColumns = "userId",
+                        onDelete = ForeignKey.CASCADE
+                ),
                 @ForeignKey(
                         entity = ThemeEntity.class,
-                        parentColumns = "id",        // The ID in Theme table
-                        childColumns = "themeId",     // The ID in this Note table
-                        onDelete = ForeignKey.SET_NULL // If theme is deleted, keep the note but set themeId to null
-                ),
-                // 2. NEW Connection to UserEntity
-                @ForeignKey(
-                        entity = UserEntity.class,    // The parent class
-                        parentColumns = "id",         // The PrimaryKey of User
-                        childColumns = "userId",      // The Foreign Key column below
-                        onDelete = ForeignKey.CASCADE  // If user is deleted, delete all their notes automatically
+                        parentColumns = "id",
+                        childColumns = "themeId",
+                        onDelete = ForeignKey.SET_NULL
                 )
         },
-        // @Index: Creates a lookup table for these columns.
-        // Without this, Room has to scan every row to find notes for a specific user, which is slow.
         indices = {
-                @Index("themeId"),
-                @Index("userId")
+                @Index(value = {"userId"}, name = "index_notes_user_id"),   // index for foreign key
+                @Index(value = {"themeId"}, name = "index_notes_theme_id")
         }
 )
-
 public class NoteEntity {
 
     @PrimaryKey(autoGenerate = true)
-    public Long id;
+    @ColumnInfo(name = "note_id")
+    private long id;
 
-    // Foreign Key columns
-    public Long themeId;  // Links to ThemeEntity.id
-    public long userId;   // Links to UserEntity.id (NEW)
+    @ColumnInfo(name = "themeId")
+    private Long themeId;
 
-    public String previewTitle;
-    public String previewText;
-    public long createdAt;
-    public String color;
-    public boolean hasChecklist;
+    @ColumnInfo(name = "userId")
+    private long userId;
 
-    // Standard constructor, getters, and setters follow...
+    @ColumnInfo(name = "title")
+    private String title;
+
+    @ColumnInfo(name = "text")
+    private String text;
+
+    @ColumnInfo(name = "createdAt")
+    private long createdAt;
+
+    @ColumnInfo(name = "color")
+    private String color;
+
+
+    // Getters and Setters
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+
+    public Long getThemeId() { return themeId; }
+    public void setThemeId(Long themeId) { this.themeId = themeId; }
+
+    public long getUserId() { return userId; }
+    public void setUserId(long userId) { this.userId = userId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+
+    public long getCreatedAt() { return createdAt; }
+    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
+
+    public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; }
 }

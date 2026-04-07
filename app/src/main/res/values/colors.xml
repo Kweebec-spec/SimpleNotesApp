@@ -22,4 +22,7 @@
     <!-- Color when the button is focused -->
     <color name="focused_button_txt_color">#D0D0D0</color>
 
+
+    <color name="blue">#86BCD3</color>
+    <color name="transparent">#000022FF</color>
 </resources>

@@ -68,15 +68,15 @@ public class AuthViewModel extends ViewModel {
             return;
         }
 
-        // Проверка заполнения email
-        if (email.isEmpty()) {
-            emailError.setValue("Email is required.");
-            return;
-        }
-
         // Проверка заполнения пароля
         if (password.isEmpty()) {
             passwordError.setValue("Password is required.");
+            return;
+        }
+
+        // Проверка заполнения email
+        if (email.isEmpty()) {
+            emailError.setValue("Email is required.");
             return;
         }
 

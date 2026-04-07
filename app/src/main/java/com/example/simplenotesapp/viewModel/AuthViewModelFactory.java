@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.simplenotesapp.repository.UserRepository;
 
+import org.jspecify.annotations.NonNull;
+
 public class AuthViewModelFactory implements ViewModelProvider.Factory {
 
     private final UserRepository repository;
@@ -14,7 +16,9 @@ public class AuthViewModelFactory implements ViewModelProvider.Factory {
         this.repository = repository;
     }
 
+    @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(Class<T> modelClass) {
 
         // ⬇️ Проверяем, какую ViewModel просят

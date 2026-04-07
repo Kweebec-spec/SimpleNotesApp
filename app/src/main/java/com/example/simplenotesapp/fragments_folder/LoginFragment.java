@@ -7,8 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
+
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,25 +18,29 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.simplenotesapp.MyApplication;
-import com.example.simplenotesapp.activitys.MainNotesActivity;
+import com.example.simplenotesapp.activitys.MainActivity;
 import com.example.simplenotesapp.R;
+import com.example.simplenotesapp.utils.KeyboardUtils;
 import com.example.simplenotesapp.viewModel.AuthViewModel;
 import com.example.simplenotesapp.activity_manager.AuthManager;
 import com.example.simplenotesapp.model.User;
 import com.example.simplenotesapp.repository.UserRepository;
 import com.example.simplenotesapp.viewModel.AuthViewModelFactory;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginFragment extends Fragment {
 
-    // UI элементы
-    EditText etUsername, etPassword, etEmail;
-    CheckBox cbRemember;
-    Button btnLogin;
+    private TextInputEditText etUsername, etPassword, etEmail;
+    private TextInputLayout etUsernameL, etEmailL, etPasswordL;
+    private CheckBox cbRemember;
+    private Button btnLogin;
 
     // Репозиторий, ViewModel и менеджер для сохранения состояния входа
-    UserRepository userRepository;
-    AuthViewModel authViewModel;
-    AuthManager authManager;
+    private UserRepository userRepository;
+    private AuthViewModel authViewModel;
+    private AuthManager authManager;
+    private ScrollView scrollView;
 
     @Nullable
     @Override
@@ -49,10 +54,20 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         // Инициализация AuthManager (для сохранения данных сессии)
-        authManager = new AuthManager(getActivity());
+        MyApplication app = (MyApplication) requireActivity().getApplication();
+
+        authManager = app.getAuthManager();
+        scrollView = view.findViewById(R.id.scrollView2);
+        KeyboardUtils.setupScrollViewKeyboardDismiss(scrollView, requireActivity());
+
+
 
         // Находим View по id
+        etUsernameL = view.findViewById(R.id.etUsernameL);
+        etPasswordL = view.findViewById(R.id.etPasswordL);
+        etEmailL = view.findViewById(R.id.etEmailL);
         etUsername = view.findViewById(R.id.etUsername);
         etPassword = view.findViewById(R.id.etPassword);
         etEmail = view.findViewById(R.id.etEmail);
@@ -60,7 +75,7 @@ public class LoginFragment extends Fragment {
         btnLogin = view.findViewById(R.id.btnLogin);
 
         // Получаем репозиторий из MyApplication
-        userRepository = ((MyApplication) requireActivity().getApplication()).getUserRepository();
+        userRepository = app.getUserRepository();
 
 // Инициализируем ViewModel
 // В будущем лучше делать так (потребуется ViewModelFactory, так как есть конструктор)
@@ -89,17 +104,21 @@ public class LoginFragment extends Fragment {
     private void setupObservers() {
         // Наблюдаем за ошибками имени (хотя в логине имя не используется, но LiveData может быть обновлена)
         authViewModel.getUsernameError().observe(getViewLifecycleOwner(), error -> {
-            etUsername.setError(error); // показываем ошибку под полем
+            etUsernameL.setError(error); // показываем ошибку под полем
+            etUsernameL.setErrorEnabled(error != null);
         });
 
         // Ошибка пароля
         authViewModel.getPasswordError().observe(getViewLifecycleOwner(), error -> {
-            etPassword.setError(error);
+            etPasswordL.setError(error);
+            etPasswordL.setErrorEnabled(error != null);
         });
 
         // Ошибка email
         authViewModel.getEmailError().observe(getViewLifecycleOwner(), error -> {
-            etEmail.setError(error);
+            etEmailL.setError(error);
+            etEmailL.setErrorEnabled(error != null);
+
         });
 
         // Общая ошибка (показываем Toast)
@@ -117,7 +136,7 @@ public class LoginFragment extends Fragment {
                 authViewModel.resetSuccess();
 
                 // Сохраняем данные входа через AuthManager (учитываем состояние чекбокса)
-                authManager.login(user, cbRemember.isChecked());
+                authManager.login(user.getId(), user.getEmail(), user.getUsername(), cbRemember.isChecked());
 
                 // Переходим к главной активности со списком заметок
                 navigateToMain();
@@ -125,16 +144,11 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    // Переход к MainNotesActivity с очисткой стека
+    // В методе navigateToMain():
     private void navigateToMain() {
-        Intent intent = new Intent(getActivity(), MainNotesActivity.class);
-
-        // Флаги гарантируют, что после перехода нельзя вернуться назад к экрану входа
+        Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
         startActivity(intent);
-
-        // Закрываем текущую Activity (AuthActivity), в которой находится фрагмент
         if (getActivity() != null) {
             getActivity().finish();
         }

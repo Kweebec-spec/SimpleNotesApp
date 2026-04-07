@@ -1,20 +1,26 @@
-package com.example.simplenotesapp.activitys;
+package com.example.simplenotesapp.fragments_folder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -22,233 +28,287 @@ import com.example.simplenotesapp.MyApplication;
 import com.example.simplenotesapp.R;
 import com.example.simplenotesapp.activity_manager.AuthManager;
 import com.example.simplenotesapp.adapters.NotesAdapter;
-import com.example.simplenotesapp.dataBase.entity.NoteEntity;
-import com.example.simplenotesapp.dataBase.entity.ThemeEntity;
-import com.example.simplenotesapp.fragments_folder.BottomSheetMenu;
+import com.example.simplenotesapp.model.Note;
+import com.example.simplenotesapp.model.ThemeModel;
 import com.example.simplenotesapp.model.User;
+import com.example.simplenotesapp.utils.KeyboardUtils;
 import com.example.simplenotesapp.viewModel.AuthViewModel;
 import com.example.simplenotesapp.viewModel.AuthViewModelFactory;
 import com.example.simplenotesapp.viewModel.NotesViewModel;
 import com.example.simplenotesapp.viewModel.NotesViewModelFactory;
 import com.example.simplenotesapp.viewModel.ThemeViewModel;
 import com.example.simplenotesapp.viewModel.ThemeViewModelFactory;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainNotesActivity extends AppCompatActivity {
+/**
+ * Главный экран со списком заметок.
+ * Фильтрация происходит только по нажатию на кнопку поиска (лупа).
+ * При выборе темы из выпадающего списка или диалога запрос не применяется.
+ * Если пользователь очищает поле темы, выбор сбрасывается на "All themes".
+ */
+public class MainNotesFragment extends Fragment {
 
-    // UI Components
+    private static final String TAG = "MainNotesFragment";
+    private static final int SPAN_COUNT = 2;
+
+    // UI components
+    private ImageView rv_emptyStateImage;
     private RecyclerView recyclerView;
-    private ImageView addNoteButton;
-    private ImageView openBottomSheetMenu;
-    private ImageView userPhoto;
+    private MaterialButton addNoteButton;
     private TextView helloUserTextView;
+    private ShapeableImageView userPhoto;
+    private TextInputEditText searchInput;          // поле поиска по заголовку/тексту
+    private ImageButton searchButton;               // кнопка поиска – по нажатию применяются фильтры
+    private ImageButton filterButton;               // кнопка для выпадающего списка тем
+    private MaterialAutoCompleteTextView searchTheme; // поле выбора темы (только сохранение выбора)
+    private MaterialButton addThemeBtn;
+    private ImageView openBottomSheetMenu;
 
-    // Search components
-    private EditText searchInput;
-    private ImageButton searchButton;
-    private ImageButton filterButton;
-    private AutoCompleteTextView searchTheme;
-    private ImageButton addThemeBtn;
-    private ImageButton dropDownBtn;
-
-    // Adapter
+    // Adapter & ViewModels
     private NotesAdapter notesAdapter;
-
-    // Managers and ViewModel
     private AuthManager authManager;
     private NotesViewModel notesViewModel;
     private AuthViewModel authViewModel;
     private ThemeViewModel themeViewModel;
 
-    // Constants
-    private static final int SPAN_COUNT = 2;
-    private List<ThemeEntity> allThemes = new ArrayList<>();
+    // Data
+    private List<ThemeModel> allThemes = new ArrayList<>(); // все темы, полученные из БД
+    private long selectedThemeId = -1;                     // -1 означает "все темы"
+    private String selectedThemeName = "All themes";       // для отображения в AutoCompleteTextView
+    private boolean isUpdatingThemeText = false;           // флаг, чтобы не реагировать на программные изменения текста
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main_notes, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        initViews();
+        initViews(view);
         setupAuthManager();
         setupViewModels();
         observeThemes();
         setupRecyclerView();
-        setupSearchAndFilter();
+        setupSearchAndFilter();      // устанавливаем слушатель на кнопку поиска (и только на неё)
         setupClickListeners();
         observeNotes();
         observeUserData();
         loadUserData();
     }
 
-    /**
-     * Initialize all UI views
-     */
-    private void initViews() {
-        helloUserTextView = findViewById(R.id.helloUserTxt);
-        userPhoto = findViewById(R.id.userPhoto);
-        addNoteButton = findViewById(R.id.addNoteBtn);
-        recyclerView = findViewById(R.id.recyclerView);
-        openBottomSheetMenu = findViewById(R.id.openBottomSheetMenu);
+    public void deleteNoteObserver(){
+        notesAdapter.setOnNoteLongClickListener((note, position) -> {
+            AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Note")
+                    .setIcon(R.drawable.ic_alert_delete_check)
+                    .setMessage("Are you sure you want to delete \"" + note.getTitle() + "\"?")
+                    .setPositiveButton("Delete", (d, which) -> {
+                        notesViewModel.deleteNote(note);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();  // ← create() instead of show()
 
-        // Search views
-        searchInput = findViewById(R.id.searchInput);
-        searchButton = findViewById(R.id.searchButton);
-        filterButton = findViewById(R.id.filterButton);
-        searchTheme = findViewById(R.id.searchTheme);
-        addThemeBtn = findViewById(R.id.addThemeBtn);
-        dropDownBtn = findViewById(R.id.dropDownBtn);
+            // Set background before showing
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_delete_bg);
+            dialog.show();  // ← show() here instead
+        });
     }
 
-    /**
-     * Setup AuthManager
-     */
+    private void initViews(View view) {
+        rv_emptyStateImage = view.findViewById(R.id.rv_emptyStateImage);
+        helloUserTextView = view.findViewById(R.id.helloUserTxt);
+        userPhoto = view.findViewById(R.id.userPhoto);
+        addNoteButton = view.findViewById(R.id.addNoteBtn);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        openBottomSheetMenu = view.findViewById(R.id.openBottomSheetMenu);
+        searchInput = view.findViewById(R.id.searchInput);
+        searchButton = view.findViewById(R.id.searchButton);
+        filterButton = view.findViewById(R.id.filterButton);
+        searchTheme = view.findViewById(R.id.searchTheme);
+        addThemeBtn = view.findViewById(R.id.addThemeBtn);
+    }
+
     private void setupAuthManager() {
-        authManager = new AuthManager(getApplicationContext());
+        authManager = new AuthManager(requireContext());
     }
 
-    /**
-     * Setup ViewModels with singleton repositories from Application
-     */
     private void setupViewModels() {
-        MyApplication app = (MyApplication) getApplication();
+        MyApplication app = (MyApplication) requireActivity().getApplication();
 
-        // NotesViewModel
         Long currentUserId = authManager.getId();
         if (currentUserId == null) currentUserId = -1L;
-        NotesViewModelFactory notesViewModelFactory = new NotesViewModelFactory(app.getNotesRepository(), currentUserId);
-        notesViewModel = new ViewModelProvider(this, notesViewModelFactory).get(NotesViewModel.class);
+
+        // NotesViewModel
+        NotesViewModelFactory notesFactory = new NotesViewModelFactory(app.getNotesRepository(), currentUserId);
+        notesViewModel = new ViewModelProvider(this, notesFactory).get(NotesViewModel.class);
 
         // ThemeViewModel
-        ThemeViewModelFactory themeFactory = new ThemeViewModelFactory(app.getThemeRepository());
+        ThemeViewModelFactory themeFactory = new ThemeViewModelFactory(app.getThemeRepository(), currentUserId);
         themeViewModel = new ViewModelProvider(this, themeFactory).get(ThemeViewModel.class);
 
         // AuthViewModel
-        AuthViewModelFactory authViewModelFactory = new AuthViewModelFactory(app.getUserRepository());
-        authViewModel = new ViewModelProvider(this, authViewModelFactory).get(AuthViewModel.class);
+        AuthViewModelFactory authFactory = new AuthViewModelFactory(app.getUserRepository());
+        authViewModel = new ViewModelProvider(requireActivity(), authFactory).get(AuthViewModel.class);
     }
 
     /**
-     * Observe themes from ViewModel
+     * Наблюдаем за списком тем из ViewModel.
+     * При получении обновления сохраняем список и обновляем AutoCompleteTextView.
      */
     private void observeThemes() {
-        themeViewModel.getThemes().observe(this, themes -> {
+        themeViewModel.getThemes().observe(getViewLifecycleOwner(), themes -> {
             allThemes.clear();
             if (themes != null) {
                 allThemes.addAll(themes);
+                // Логируем все полученные темы для отладки
+                for (ThemeModel t : allThemes) {
+                    Log.d(TAG, "Loaded theme: " + t.getName() + " ID=" + t.getId());
+                }
             }
-            setupThemeAutoComplete();
+            setupThemeAutoComplete();  // обновляем выпадающий список тем
         });
     }
 
-    /**
-     * Load user data from AuthViewModel
-     */
-    private void loadUserData() {
-        String userName = authManager.getUserName();
-        if (userName != null && !userName.isEmpty()) {
-            updateUserGreeting(userName);
-            return;
-        }
-
-        // Получаем пользователя из AuthViewModel
-        User user = authViewModel.getLoggedInUser().getValue();
-        if (user != null) {
-            updateUserGreeting(user.getUsername());
-            authManager.updateUserName(user.getUsername());
-        } else {
-            helloUserTextView.setText("Hello, User!");
-        }
-    }
-
-    /**
-     * Observe user data from AuthViewModel
-     */
-    private void observeUserData() {
-        authViewModel.getLoggedInUser().observe(this, user -> {
-            if (user != null) {
-                updateUserGreeting(user.getUsername());
-                authManager.updateUserName(user.getUsername());
-            }
-        });
-    }
-
-    /**
-     * Setup RecyclerView with adapter and layout manager
-     */
     private void setupRecyclerView() {
         notesAdapter = new NotesAdapter();
         recyclerView.setAdapter(notesAdapter);
 
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
-                SPAN_COUNT,
-                StaggeredGridLayoutManager.VERTICAL
-        );
-
+                SPAN_COUNT, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(false);
 
-        setupNoteClickListener();
-        notesAdapter.setOnThemeClickListener((note, anchor) -> showThemeSelectionDialog(note));
-    }
-
-    /**
-     * Setup click listener for notes in the adapter
-     */
-    private void setupNoteClickListener() {
         notesAdapter.setOnNoteClickListener(note -> {
-            if (note != null) {
-                openNoteScreen(note.getId());
+            if (note != null) openNoteScreen(note.getId());
+        });
+        notesAdapter.setOnThemeClickListener(this::showThemeSelectionDialog);
+
+
+        // ✅ ADD THIS — dismiss keyboard when tapping empty space in RV
+        recyclerView.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                if (e.getAction() == MotionEvent.ACTION_DOWN) {
+                    View child = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (child == null) { // ← tapped on empty space, not on a note item
+                        KeyboardUtils.handleDispatchTouchEvent(e, requireActivity());
+                    }
+                }
+                return false; // never consume the event
             }
         });
+        deleteNoteObserver();
     }
 
-    /**
-     * Setup all click listeners for buttons
-     */
     private void setupClickListeners() {
         addNoteButton.setOnClickListener(v -> createNewNote());
 
-        openBottomSheetMenu.setOnClickListener(view -> {
-            BottomSheetMenu bottomSheetDialogFragment = new BottomSheetMenu();
-            bottomSheetDialogFragment.show(getSupportFragmentManager(), "BottomSheetMenu");
+        openBottomSheetMenu.setOnClickListener(v -> {
+            BottomSheetMenu bottomSheet = new BottomSheetMenu();
+            bottomSheet.show(getParentFragmentManager(), "BottomSheetMenu");
         });
 
-        addThemeBtn.setOnClickListener(v -> startActivity(new Intent(this, AddThemeActivity.class)));
+        addThemeBtn.setOnClickListener(v -> {
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_mainNotes_to_addTheme);
+        });
+
+        // Кнопка фильтра – по нажатию открывает выпадающий список тем
+        filterButton.setOnClickListener(v -> searchTheme.showDropDown());
+        // Долгое нажатие – открывает диалог выбора темы
+        filterButton.setOnLongClickListener(v -> {
+            showThemeFilterDialog();
+            return true;
+        });
+
     }
 
-    /**
-     * Setup search and filter functionality
-     */
+    // ------------------------------------------------------------------------
+    // Поиск и фильтрация только по кнопке
+    // ------------------------------------------------------------------------
+
     private void setupSearchAndFilter() {
-        // Поиск по тексту при нажатии на кнопку поиска
-        searchButton.setOnClickListener(v -> {
-            String query = searchInput.getText().toString().trim();
-            notesViewModel.searchNotes(query);
-        });
+        // Убираем любые TextWatchers – фильтрация только по клику на кнопку
+        searchButton.setOnClickListener(v -> applyFilters());
+    }
 
-        // Поиск по тексту в реальном времени
-        searchInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    private void applyFilters() {
+        String query = searchInput.getText().toString().trim();
+        String themeDisplay = (selectedThemeId == -1) ? "All themes" : selectedThemeName;
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        // Логируем и показываем тост для отладки
+        Log.d(TAG, "Apply filters: themeId=" + selectedThemeId + ", query=\"" + query + "\"");
+        Toast.makeText(requireContext(),
+                "Filtering: " + themeDisplay + (query.isEmpty() ? "" : " | search: \"" + query + "\""),
+                Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                String query = s.toString().trim();
-                notesViewModel.searchNotes(query);
+        // Передаём выбранную тему и поисковый запрос в ViewModel
+        notesViewModel.filterByTheme(selectedThemeId);
+        notesViewModel.searchNotes(query);
+    }
+
+    // ------------------------------------------------------------------------
+    // Выбор темы – только сохранение выбора, фильтрация не применяется
+    // ------------------------------------------------------------------------
+
+    private void setupThemeAutoComplete() {
+        List<String> themeNames = new ArrayList<>();
+        themeNames.add("All themes");
+        for (ThemeModel theme : allThemes) {
+            themeNames.add(theme.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_dropdown_item_1line, themeNames);
+        searchTheme.setAdapter(adapter);
+        searchTheme.setThreshold(1);
+
+        // Слушатель на выбор из выпадающего списка
+        searchTheme.setOnItemClickListener((parent, view, position, id) -> {
+            isUpdatingThemeText = true;
+            String selected = (String) parent.getItemAtPosition(position);
+            if (selected.equals("All themes")) {
+                selectedThemeId = -1;
+                selectedThemeName = "All themes";
+                searchTheme.setText("All themes");
+                Log.d(TAG, "Theme selected: All themes (ID=-1)");
+            } else {
+                // Ищем тему с таким именем в allThemes
+                ThemeModel found = null;
+                for (ThemeModel theme : allThemes) {
+                    if (theme.getName().equals(selected)) {
+                        found = theme;
+                        break;
+                    }
+                }
+                if (found != null) {
+                    selectedThemeId = found.getId();
+                    selectedThemeName = found.getName();
+                    searchTheme.setText(selectedThemeName); // уже выставлено, но для уверенности
+                    Log.d(TAG, "Theme selected: " + selectedThemeName + " ID=" + selectedThemeId);
+                } else {
+                    Log.e(TAG, "Selected theme not found in allThemes: " + selected);
+                    selectedThemeId = -1;
+                    selectedThemeName = "All themes";
+                    searchTheme.setText("");
+                }
             }
+            isUpdatingThemeText = false;
+            // Фильтр НЕ применяется – пользователь должен нажать на кнопку поиска
         });
 
-        // Фильтр по теме при нажатии на filterButton
-        filterButton.setOnClickListener(v -> showThemeFilterDialog());
-
-        // Поиск по теме во втором поиске
+        // TextWatcher для отслеживания ручного очищения поля темы
         searchTheme.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -258,18 +318,22 @@ public class MainNotesActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String themeQuery = s.toString().trim();
-                filterByThemeName(themeQuery);
+                if (isUpdatingThemeText) return; // игнорируем программные изменения
+                String text = s.toString().trim();
+                if (text.isEmpty()) {
+                    // Пользователь очистил поле темы – сбрасываем выбор на "All themes"
+                    selectedThemeId = -1;
+                    selectedThemeName = "All themes";
+                    Log.d(TAG, "Theme field cleared, reset to All themes");
+                    // Фильтр не применяем
+                }
             }
         });
     }
 
-    /**
-     * Show dialog with all themes for filtering
-     */
     private void showThemeFilterDialog() {
         if (allThemes.isEmpty()) {
-            Toast.makeText(this, "No themes available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "No themes available", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -279,186 +343,164 @@ public class MainNotesActivity extends AppCompatActivity {
             themeNames[i + 1] = allThemes.get(i).getName();
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Filter by theme")
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Select theme")
                 .setItems(themeNames, (dialog, which) -> {
+                    isUpdatingThemeText = true;
                     if (which == 0) {
-                        // All themes
-                        notesViewModel.filterByTheme(-1);
+                        selectedThemeId = -1;
+                        selectedThemeName = "All themes";
                         searchTheme.setText("");
+                        Log.d(TAG, "Theme selected via dialog: All themes");
                     } else {
-                        // Selected theme
-                        ThemeEntity selected = allThemes.get(which - 1);
-                        notesViewModel.filterByTheme(selected.getId());
-                        searchTheme.setText(selected.getName());
+                        ThemeModel selected = allThemes.get(which - 1);
+                        selectedThemeId = selected.getId();
+                        selectedThemeName = selected.getName();
+                        searchTheme.setText(selectedThemeName);
+                        Log.d(TAG, "Theme selected via dialog: " + selectedThemeName + " ID=" + selectedThemeId);
                     }
+                    isUpdatingThemeText = false;
+                    // Фильтр не применяется
                 })
                 .show();
     }
 
-    /**
-     * Setup theme auto-complete
-     */
-    private void setupThemeAutoComplete() {
-        List<String> themeNames = new ArrayList<>();
-        themeNames.add("All themes");
-        for (ThemeEntity theme : allThemes) {
-            themeNames.add(theme.getName());
-        }
+    // ------------------------------------------------------------------------
+    // Операции с заметками (без изменений)
+    // ------------------------------------------------------------------------
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, themeNames);
-        searchTheme.setAdapter(adapter);
-        searchTheme.setThreshold(1);
-
-        searchTheme.setOnItemClickListener((parent, view, position, id) -> {
-            String selected = (String) parent.getItemAtPosition(position);
-            if (selected.equals("All themes")) {
-                notesViewModel.filterByTheme(-1);
-            } else {
-                // Находим ID выбранной темы
-                for (ThemeEntity theme : allThemes) {
-                    if (theme.getName().equals(selected)) {
-                        notesViewModel.filterByTheme(theme.getId());
-                        break;
-                    }
-                }
-            }
-        });
-
-        dropDownBtn.setOnClickListener(v -> searchTheme.showDropDown());
-    }
-
-    /**
-     * Filter notes by theme name
-     */
-    private void filterByThemeName(String themeName) {
-        if (themeName.isEmpty() || themeName.equals("All themes")) {
-            notesViewModel.filterByTheme(-1);
-            return;
-        }
-
-        for (ThemeEntity theme : allThemes) {
-            if (theme.getName().toLowerCase().contains(themeName.toLowerCase())) {
-                notesViewModel.filterByTheme(theme.getId());
-                return;
-            }
-        }
-        // If no theme found, show all
-        notesViewModel.filterByTheme(-1);
-    }
-
-    /**
-     * Create a new note
-     */
     private void createNewNote() {
         Long currentUserId = authManager.getId();
-
         if (currentUserId == null || currentUserId <= 0) {
-            Toast.makeText(this, "User ID is invalid", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "User ID is invalid", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        NoteEntity newNote = new NoteEntity();
-        newNote.setUserId(currentUserId);
-        newNote.setTitle("");
-        newNote.setText("");
+        Note newNote = new Note();
+        newNote.setUserid(currentUserId);
+        newNote.setTitle("Unnamed");
+        newNote.setContent("");
+        newNote.setThemeId(-1);
+        newNote.setColor(null);
 
-        notesViewModel.createNoteAndOpen(newNote, this);
+        addNoteButton.setEnabled(false);
+
+        notesViewModel.createNote(newNote, new NotesViewModel.OnNoteCreatedCallback() {
+            @Override
+            public void onSuccess(long noteId) {
+                addNoteButton.setEnabled(true);
+                Bundle args = new Bundle();
+                args.putLong("noteId", noteId);
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_mainNotes_to_note, args);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                addNoteButton.setEnabled(true);
+                Toast.makeText(requireContext(),
+                        "Error creating note: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    /**
-     * Show theme selection dialog for a note with "No theme" option
-     */
-    private void showThemeSelectionDialog(NoteEntity note) {
+    private void showThemeSelectionDialog(Note note, View anchor) {
         if (allThemes.isEmpty()) {
-            // Если тем нет, показываем только опцию "No theme"
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(requireContext())
                     .setTitle("Choose theme")
                     .setItems(new String[]{"No theme"}, (dialog, which) -> {
-                        note.setThemeId(null);
+                        note.setThemeId(-1);
                         note.setColor(null);
                         notesViewModel.updateNote(note);
-                        int position = notesAdapter.getCurrentList().indexOf(note);
-                        if (position >= 0) {
-                            notesAdapter.notifyItemChanged(position);
-                        }
+                        int pos = notesAdapter.getCurrentList().indexOf(note);
+                        if (pos >= 0) notesAdapter.notifyItemChanged(pos);
                     })
                     .show();
             return;
         }
 
-        // Создаем массив с опциями: сначала "No theme", потом все темы
         String[] names = new String[allThemes.size() + 1];
         names[0] = "No theme";
         for (int i = 0; i < allThemes.size(); i++) {
             names[i + 1] = allThemes.get(i).getName();
         }
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Choose theme")
                 .setItems(names, (dialog, which) -> {
                     if (which == 0) {
-                        // Выбрана опция "No theme"
-                        note.setThemeId(null);
+                        note.setThemeId(-1);
                         note.setColor(null);
                     } else {
-                        // Выбрана конкретная тема
-                        ThemeEntity selected = allThemes.get(which - 1);
+                        ThemeModel selected = allThemes.get(which - 1);
                         note.setThemeId(selected.getId());
                         note.setColor(selected.getColor());
                     }
                     notesViewModel.updateNote(note);
-                    int position = notesAdapter.getCurrentList().indexOf(note);
-                    if (position >= 0) {
-                        notesAdapter.notifyItemChanged(position);
-                    }
+                    int pos = notesAdapter.getCurrentList().indexOf(note);
+                    if (pos >= 0) notesAdapter.notifyItemChanged(pos);
                 })
                 .show();
     }
 
-    /**
-     * Open existing note screen
-     * @param noteId ID of the note to open
-     */
     private void openNoteScreen(long noteId) {
-        notesViewModel.setCurrentNoteId(noteId);
-        Intent intent = new Intent(MainNotesActivity.this, NoteScreen.class);
-        intent.putExtra("noteId", noteId);
-        startActivity(intent);
+        Bundle args = new Bundle();
+        args.putLong("noteId", noteId);
+        Navigation.findNavController(requireView())
+                .navigate(R.id.action_mainNotes_to_note, args);
     }
 
-    /**
-     * Observe notes from ViewModel and update UI
-     */
     private void observeNotes() {
-        notesViewModel.getFilteredNotes().observe(this, notes -> {
+        notesViewModel.getFilteredNotes().observe(getViewLifecycleOwner(), notes -> {
             notesAdapter.submitList(notes);
             updateEmptyState(notes == null || notes.isEmpty());
         });
     }
 
-    /**
-     * Update UI based on empty state
-     */
     private void updateEmptyState(boolean isEmpty) {
-        // добавить отображение пустого состояния
+        if (isEmpty) {
+            rv_emptyStateImage.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            rv_emptyStateImage.setOnClickListener(v -> createNewNote());
+        } else {
+            rv_emptyStateImage.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
-    /**
-     * Update user greeting with username
-     */
+    private void observeUserData() {
+        authViewModel.getLoggedInUser().observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                updateUserGreeting(user.getUsername());
+                authManager.updateUserName(user.getUsername());
+            }
+        });
+    }
+
+    private void loadUserData() {
+        String userName = authManager.getUserName();
+        if (userName != null && !userName.isEmpty()) {
+            updateUserGreeting(userName);
+            return;
+        }
+        User user = authViewModel.getLoggedInUser().getValue();
+        if (user != null) {
+            updateUserGreeting(user.getUsername());
+            authManager.updateUserName(user.getUsername());
+        } else {
+            helloUserTextView.setText("Hello, User!");
+        }
+    }
+
     private void updateUserGreeting(String userName) {
         String baseGreeting = getString(R.string.hello_user);
         helloUserTextView.setText(baseGreeting + " " + userName + " !");
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        if (notesViewModel != null) {
-            notesViewModel.refreshNotes();
-        }
+        if (notesViewModel != null) notesViewModel.refreshNotes();
         loadUserData();
     }
 }

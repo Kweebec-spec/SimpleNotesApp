@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <com.google.android.material.card.MaterialCardView
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -10,99 +7,109 @@
     android:clickable="true"
     android:focusable="true"
     app:rippleColor="?attr/colorControlHighlight"
-    app:strokeColor="?attr/colorSurfaceContainerLow"
-    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:strokeColor="?attr/colorOnSecondary"
+    app:cardBackgroundColor="?attr/colorPrimaryContainer"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="8dp"
     app:cardCornerRadius="25dp"
     app:cardElevation="0dp"
-    app:strokeWidth="1dp"
-
+    app:strokeWidth="2dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true">
-    <!-- cardOverlap unable to file the cardview to the corners- clears spaces, cardUseCompat padding makes all the same padding for shades-->
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/top_note_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingLeft="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:id="@+id/top_note_section"
+            android:paddingRight="10dp"
+            android:orientation="horizontal"
+            android:weightSum="100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:weightSum="100">
+            android:layout_marginBottom="5dp">
 
-        <TextView
-            android:textColor="?attr/colorPrimary"
-            android:id="@+id/noteTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Title.."
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-            android:textStyle="bold"
-            android:layout_weight="55"
-            android:layout_gravity="center|top"
-            />
+            <TextView
+                android:id="@+id/noteTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="95"
+                android:text="Title.."
+                android:layout_marginRight="10dp"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?attr/colorOnPrimaryContainer"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
-        <TextView
-            android:id="@+id/noteDate"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginRight="4dp"
-            android:text="12:45"
-            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-            android:textColor="?attr/colorSecondary"
-            android:textStyle="italic"
-            android:layout_weight="40"
-            android:gravity="right|top"
-            />
+
+
             <View
                 android:id="@+id/themeColorView"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@drawable/theme_circle"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="center|top"
-
-                />
-
-
+                android:layout_marginBottom="5dp"/>
 
         </LinearLayout>
+
         <View
             android:id="@+id/divide_line"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-
-            android:background="?attr/colorSurfaceContainerLow"
+            android:layout_height="4dp"
+            android:background="?attr/colorOnSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/top_note_section"
-            />
+            app:layout_constraintTop_toBottomOf="@id/top_note_section"/>
+
+        <TextView
+            android:id="@+id/noteText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/TXT"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorPrimary"
+            android:maxLines="20"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divide_line" />
+
+        <View
+            android:id="@+id/divide_line_2"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="?attr/colorOnSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteText" />
 
 
         <TextView
-            android:maxLines="40"
-            android:padding="10dp"
-            android:textColor="?attr/colorSecondary"
-            android:id="@+id/noteText"
+            android:id="@+id/noteDate"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/TXT"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_height="wrap_content"
+            android:text="12:45"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textColor="?attr/colorSecondary"
+            android:textStyle="italic"
+            android:gravity="right|center"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divide_line"/>
+            app:layout_constraintTop_toBottomOf="@id/noteText"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

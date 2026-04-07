@@ -6,6 +6,10 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
+        <exclude domain="sharedpref" path="authPrefs.xml" />
+        <exclude domain="sharedpref" path="themePrefs.xml" />
+        <exclude domain="sharedpref" path="notification_prefs.xml" />
+        <exclude domain="database" path="notes.db" />
     <!--
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>

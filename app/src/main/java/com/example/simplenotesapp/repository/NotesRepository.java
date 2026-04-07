@@ -1,65 +1,176 @@
 package com.example.simplenotesapp.repository;
+
+import android.util.Log;
+
 import com.example.simplenotesapp.dataBase.dao.NoteDao;
 import com.example.simplenotesapp.dataBase.entity.NoteEntity;
-import com.example.simplenotesapp.dataBase.dao.NoteItemDao;
-import com.example.simplenotesapp.dataBase.entity.NoteItemEntity;
-import com.example.simplenotesapp.dataBase.pojo.PreviewNoteWithItemsThemes;
+
 import java.util.List;
-import androidx.lifecycle.LiveData;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-// Repository = переводчик + логика данных
+import androidx.lifecycle.LiveData;
 
 public class NotesRepository {
 
+    private static final String TAG = "NotesRepository";
     private final NoteDao noteDao;
-    private final NoteItemDao itemDao;
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
-    private static NotesRepository instance; // Исправили имя
+    private static NotesRepository instance;
 
-    // 1. Конструктор теперь принимает ВСЕ нужные DAO
-    private NotesRepository(NoteDao noteDao, NoteItemDao itemDao) {
+    private NotesRepository(NoteDao noteDao) {
         this.noteDao = noteDao;
-        this.itemDao = itemDao;
     }
 
-    // 2. Метод получения экземпляра принимает оба DAO
-    public static synchronized NotesRepository getInstance(NoteDao noteDao, NoteItemDao itemDao) {
+    public static synchronized NotesRepository getInstance(NoteDao noteDao) {
         if (instance == null) {
-            instance = new NotesRepository(noteDao, itemDao);
+            instance = new NotesRepository(noteDao);
         }
         return instance;
     }
 
-    // LiveData работает в фоновом потоке сама, executor тут не нужен
-    public LiveData<List<PreviewNoteWithItemsThemes>> getNotesForUser(long userId) {
+
+    // ============ LIVE DATA METHODS ============
+    public LiveData<List<NoteEntity>> getNotesByThemeAndQuery(long userId, long themeId, String query) {
+        return noteDao.getNotesByThemeAndQuery(userId, themeId, query);
+    }
+    public List<NoteEntity> getNotesByThemeIdSync(long themeId) {
+        return noteDao.getNotesByThemeIdSync(themeId);
+    }
+
+
+
+    public LiveData<List<NoteEntity>> getNotesForUser(long userId) {
         return noteDao.getNotesForUser(userId);
     }
-    public LiveData<List<PreviewNoteWithItemsThemes>> getNotesWithPreview(long userId) {
-        noteDao.testQuery(userId);
-        return noteDao.getNotesWithPreview(userId);
+
+    public LiveData<NoteEntity> getNoteById(long noteId) {
+        return noteDao.getNoteById(noteId);
     }
 
-    // Все изменения данных (Write) ОБЯЗАТЕЛЬНО через executor
-    public void upsertNote(NoteEntity note) {
-        executor.execute(() -> noteDao.upsert(note));
+    public LiveData<List<NoteEntity>> searchNotes(long userId, String query) {
+        return noteDao.searchNotes(userId, query);
     }
+
+    public LiveData<NoteEntity> getLastCreatedNote() {
+        return noteDao.getLastCreatedNoteLiveData();
+    }
+
+    public LiveData<NoteEntity> getLastCreatedNoteForUser(long userId) {
+        return noteDao.getLastCreatedNoteForUserLiveData(userId);
+    }
+
+    public LiveData<Integer> getNotesCount(long userId) {
+        return noteDao.getNotesCount(userId);
+    }
+
+    // ============ SYNC METHODS ============
+
+    public NoteEntity getNoteByIdSync(long noteId) {
+        try {
+            return noteDao.getNoteByIdSync(noteId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting note by id sync", e);
+            return null;
+        }
+    }
+
+    // ============ INSERT METHODS ============
+
+    public long insertNoteAndGetId(NoteEntity note) {
+        return noteDao.insert(note);
+    }
+
+    public void insertNotes(List<NoteEntity> notes) {
+        executor.execute(() -> {
+            try {
+                noteDao.insertAll(notes);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting notes", e);
+            }
+        });
+    }
+
+    // ============ UPDATE METHODS ============
 
     public void updateNote(NoteEntity note) {
-        executor.execute(() -> noteDao.update(note));
+        executor.execute(() -> {
+            try {
+                noteDao.update(note);
+            } catch (Exception e) {
+                Log.e(TAG, "Error updating note", e);
+            }
+        });
     }
+
+    // ============ UPSERT METHODS ============
+
+    public void upsertNote(NoteEntity note) {
+        executor.execute(() -> {
+            try {
+                noteDao.upsert(note);
+            } catch (Exception e) {
+                Log.e(TAG, "Error upserting note", e);
+            }
+        });
+    }
+
+    // ============ DELETE METHODS ============
 
     public void deleteNote(NoteEntity note) {
-        executor.execute(() -> noteDao.delete(note));
+        executor.execute(() -> {
+            try {
+                noteDao.delete(note);
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting note", e);
+            }
+        });
     }
 
-    public void upsertItem(NoteItemEntity item) {
-        executor.execute(() -> itemDao.upsert(item));
+    public void deleteAllNotesForUser(long userId) {
+        executor.execute(() -> {
+            try {
+                noteDao.deleteAllNotesForUser(userId);
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting all notes for user", e);
+            }
+        });
     }
 
-    public void deleteItem(NoteItemEntity item) {
-        executor.execute(() -> itemDao.delete(item));
+    // ============ REFRESH METHOD ============
+
+    /**
+     * Обновляет LiveData путем обновления поля updatedAt
+     * Вызывайте этот метод когда нужно принудительно обновить список заметок
+     */
+    public void refreshNotes(long userId) {
+        executor.execute(() -> {
+            try {
+                long currentTime = System.currentTimeMillis();
+                noteDao.touchNotesForUser(userId, currentTime);
+                Log.d(TAG, "Notes refreshed for user: " + userId);
+            } catch (Exception e) {
+                Log.e(TAG, "Error refreshing notes", e);
+            }
+        });
+    }
+
+
+
+    // ============ CLEANUP ============
+
+    public void shutdown() {
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                executor.shutdownNow();
+            }
+        }
     }
 }

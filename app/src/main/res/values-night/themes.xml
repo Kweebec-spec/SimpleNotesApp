@@ -3,6 +3,14 @@
     <style name="Base.Theme.SimpleNotesApp" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
 
     </style>
+    <style name="ErrorTextAppearance" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">?attr/colorError</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+        <!-- adds space below error text -->
+        <item name="android:gravity">center</item>
+
+    </style>
 
 
 </resources>

@@ -1,83 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Top section ConstraintLayout -->
+    <!-- Top section with navigation buttons -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_section"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/go_out_of_here"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/outline_door_open_50"
             android:padding="12dp"
+            android:src="@drawable/outline_door_open_50"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/bottom_sheet_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/outline_settings_24"
             android:padding="12dp"
+            android:src="@drawable/outline_settings_24"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Tab Layout (ТЕПЕРЬ ВИДИМ) -->
+
+    <!-- Tab Layout -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/top_section" />
 
     <!-- Create Theme Section -->
     <LinearLayout
         android:id="@+id/createThemeSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:endIconMode="clear_text"
+            android:background="@drawable/edittext_bkg"
+            android:layout_marginTop="10dp"
+            android:padding="4dp"
+            app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editThemeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Название темы"
+            android:layout_marginTop="16dp"
+
+
+            android:hint="Theme name"
             android:inputType="text"
             android:padding="12dp"
-            android:background="@drawable/edittext_bkg"/>
+            android:textColor="@color/edit_stroke_dr_selector1"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:endIconMode="clear_text"
+            android:background="@drawable/edittext_bkg"
+            android:layout_marginTop="10dp"
+            app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editColorHex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="#RRGGBB"
+            android:hint="#AARRGGBB"
             android:inputType="text"
-            android:padding="12dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/edittext_bkg"
-            android:text="#FF4081"/>
+            android:text=""
+            android:textColor="@color/edit_stroke_dr_selector1"/>
 
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:id="@+id/titleTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="24dp"
             android:text="Preview"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:textColor="?attr/colorPrimaryInverse"
+            android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="160dp"/>
+            android:layout_gravity="center"
+            android:gravity="center|bottom"
+            android:background="@drawable/preview_add_theme_txt_bkg"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/noteContainerPreview"
@@ -86,25 +116,35 @@
             android:layout_gravity="center"
             android:clickable="true"
             android:focusable="true"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
             app:cardCornerRadius="40dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
             app:strokeColor="?attr/colorSurfaceContainerLow"
-            app:strokeWidth="5dp">
+            app:strokeWidth="5dp"
+            android:layout_centerHorizontal="true">
 
-            <include android:id="@+id/notePreview" layout="@layout/item_note"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
+                <include
+                    android:id="@+id/notePreview"
+                    layout="@layout/item_note" />
+
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
-            android:layout_width="280dp"
+            android:layout_width="380dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="46dp"
             android:text="Save theme"
-            android:layout_gravity="center"
             android:textColor="?attr/colorOnTertiary"
-            app:backgroundTint="?attr/colorTertiary" />
+            app:backgroundTint="?attr/colorTertiary"
+            app:cornerRadius="0dp" />
 
     </LinearLayout>
 
@@ -112,25 +152,32 @@
     <LinearLayout
         android:id="@+id/manageThemesSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteTheme"
+            android:backgroundTint="?attr/colorError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete Multiple Themes"
+            android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:text="Delete Multiple Themes" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewThemes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnTertiary"
+            app:backgroundTint="?attr/colorTertiary"
+            app:cornerRadius="0dp"
             android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="false" />
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
